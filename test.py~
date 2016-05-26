@@ -1,4 +1,0 @@
-nodelist = []
-nodelist.append(("one", 1))
-nodelist.append(("two", 2))
-nodelist.append(("three", 3))

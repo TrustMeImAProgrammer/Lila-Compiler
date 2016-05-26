@@ -1,0 +1,9 @@
+int main(int argc, char *argv[])
+{
+    int x = 1;
+	if(!x)
+		printf ("false\n");
+	else
+		printf ("true\n");
+    return 0;
+}

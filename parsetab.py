@@ -5,7 +5,7 @@ _tabversion = '3.8'
 
 _lr_method = 'LALR'
 
-_lr_signature = '9ADA2D9ED2C3BEA660E052F1D86AFC6C'
+_lr_signature = '385C43686509AC360212AE15CAFE94AD'
     
 _lr_action_items = {'RPAREN':([1,2,4,8,11,12,13,14,15,],[-3,-7,-6,13,-5,-4,-8,-1,-2,]),'DIVIDE':([1,2,4,11,12,13,14,15,],[6,-7,-6,-5,-4,-8,6,6,]),'NUMBER':([0,3,6,7,9,10,],[2,2,2,2,2,2,]),'TIMES':([1,2,4,11,12,13,14,15,],[7,-7,-6,-5,-4,-8,7,7,]),'PLUS':([1,2,4,5,8,11,12,13,14,15,],[-3,-7,-6,9,9,-5,-4,-8,-1,-2,]),'LPAREN':([0,3,6,7,9,10,],[3,3,3,3,3,3,]),'MINUS':([1,2,4,5,8,11,12,13,14,15,],[-3,-7,-6,10,10,-5,-4,-8,-1,-2,]),'$end':([1,2,4,5,11,12,13,14,15,],[-3,-7,-6,0,-5,-4,-8,-1,-2,]),}
 
@@ -26,12 +26,12 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> expression","S'",1,None,None,None),
-  ('expression -> expression PLUS term','expression',3,'p_expression_plus','parser.py',5),
-  ('expression -> expression MINUS term','expression',3,'p_expression_minus','parser.py',9),
-  ('expression -> term','expression',1,'p_expression_term','parser.py',13),
-  ('term -> term TIMES factor','term',3,'p_term_times','parser.py',17),
-  ('term -> term DIVIDE factor','term',3,'p_term_divide','parser.py',21),
-  ('term -> factor','term',1,'p_term_factor','parser.py',25),
-  ('factor -> NUMBER','factor',1,'p_factor_num','parser.py',29),
-  ('factor -> LPAREN expression RPAREN','factor',3,'p_factor_expr','parser.py',33),
+  ('expression -> expression PLUS term','expression',3,'p_expression_plus','parser.py',16),
+  ('expression -> expression MINUS term','expression',3,'p_expression_minus','parser.py',21),
+  ('expression -> term','expression',1,'p_expression_term','parser.py',25),
+  ('term -> term TIMES factor','term',3,'p_term_times','parser.py',29),
+  ('term -> term DIVIDE factor','term',3,'p_term_divide','parser.py',33),
+  ('term -> factor','term',1,'p_term_factor','parser.py',37),
+  ('factor -> NUMBER','factor',1,'p_factor_num','parser.py',41),
+  ('factor -> LPAREN expression RPAREN','factor',3,'p_factor_expr','parser.py',46),
 ]

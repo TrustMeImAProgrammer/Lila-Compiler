@@ -1,26 +1,18 @@
 class Node(object):
-    def __init__(self, type, children=None, leaf=None):
+    def __init__(self, type, children):
         self.type = type
         if children:
             self.children = children
         else:
             self.children = [ ]
-        self.leaf = leaf
-    def children(self):
+    def show(self):
         pass
 
+
+
 class BinaryOp(Node):
-    def __init__(self, op, left, right):
-        self.op = op
-        self.left = left
-        self.right = right
-    def children(self):
-        nodelist = []
-        if self.left is not None:
-            nodelist.append(("left", self.left))
-        if self.right is not None:
-            nodelist.append(("right", self.right))
-        return tuple(nodelist)
+    def __init__(self, type, children):
+        super(BinaryOp, self).__init__(type, children)
 
 class UnaryOp(Node):
     def __init__(self, op, expr):
@@ -31,3 +23,7 @@ class UnaryOp(Node):
         if self.expr is not None:
             nodelist.append(("expr", self.expr))
         return tuple(nodelist)
+
+class FuncCall(Node):
+    def __init__(self, type, children):
+        super(FuncCall, self).__init__(type, children)

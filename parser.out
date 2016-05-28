@@ -4,21 +4,37 @@ Unused terminals:
 
     DO
     ISEQUALS
-    DEQUALS
+    NOT
+    LBRACKET
     WHILE
+    TRUE
     STRING
     COMMENT
+    LE
+    LT
     SLITERAL
+    COMMA
+    TIMESEQUALS
+    DIVEQUALS
+    GT
+    MODULO
+    PLUSPLUS
     IS
     EQUALS
+    PLUSEQUALS
+    GE
+    MINUSMINUS
     ID
     IF
-    LBRACKET
+    AND
+    FALSE
     INT
-    DOUBLE
+    FLOAT
+    BOOLEAN
     CALL
-    NOT
+    MINUSEQUALS
     RBRACKET
+    OR
 
 Grammar
 
@@ -34,29 +50,45 @@ Rule 8     factor -> LPAREN expression RPAREN
 
 Terminals, with rules where they appear
 
+AND                  : 
+BOOLEAN              : 
 CALL                 : 
+COMMA                : 
 COMMENT              : 
-DEQUALS              : 
+DIVEQUALS            : 
 DIVIDE               : 5
 DO                   : 
-DOUBLE               : 
 EQUALS               : 
+FALSE                : 
+FLOAT                : 
+GE                   : 
+GT                   : 
 ID                   : 
 IF                   : 
 INT                  : 
 IS                   : 
 ISEQUALS             : 
 LBRACKET             : 
+LE                   : 
 LPAREN               : 8
+LT                   : 
 MINUS                : 2
+MINUSEQUALS          : 
+MINUSMINUS           : 
+MODULO               : 
 NOT                  : 
 NUMBER               : 7
+OR                   : 
 PLUS                 : 1
+PLUSEQUALS           : 
+PLUSPLUS             : 
 RBRACKET             : 
 RPAREN               : 8
 SLITERAL             : 
 STRING               : 
 TIMES                : 4
+TIMESEQUALS          : 
+TRUE                 : 
 WHILE                : 
 error                : 
 

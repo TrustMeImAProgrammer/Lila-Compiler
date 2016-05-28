@@ -4,7 +4,7 @@ reserved = {
     'if' : 'IF',
     'while' : 'WHILE',
     'do' : 'DO',
-    'is' : 'IS',
+#    'is' : 'IS',
     'equals' : 'ISEQUALS',
     'call' : 'CALL',
     'and' : 'AND',
@@ -21,14 +21,14 @@ reserved = {
 tokens = ["SLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
           "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", 
           "EQUALS", "TIMESEQUALS", "DIVEQUALS", "PLUSEQUALS", "MINUSEQUALS",
-          "PLUSPLUS", "MINUSMINUS", "COMMENT", 'COMMA', 'ID'] + list(reserved.values())
+          "PLUSPLUS", "MINUSMINUS", "COMMENT", 'COMMA', 'ID', 'NUMBER'] + list(reserved.values())
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = reserved.get(t.value, 'ID') # Check for reserved words
     return t
 
-def t_INT(t):
+def t_NUMBER(t):
     r"\d+"
     t.value = int(t.value)
     return t

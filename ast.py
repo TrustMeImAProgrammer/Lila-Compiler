@@ -8,22 +8,22 @@ class Node(object):
     def show(self):
         pass
 
-
-
 class BinaryOp(Node):
     def __init__(self, type, children):
         super(BinaryOp, self).__init__(type, children)
 
 class UnaryOp(Node):
-    def __init__(self, op, expr):
-        self.op = op
-        self.expr = expr
-    def children(self):
-        nodelist = []
-        if self.expr is not None:
-            nodelist.append(("expr", self.expr))
-        return tuple(nodelist)
+    def __init__(self, type, children):
+        super(UnaryOp, self).__init__(type, children)
 
 class FuncCall(Node):
     def __init__(self, type, children):
         super(FuncCall, self).__init__(type, children)
+
+class PreIncrExpression(Node):
+    def __init__(self, type, children):
+        super(PreIncrExpression, self).__init__(type, children)
+
+class PreDecrExpression(Node):
+    def __init__(self, type, children):
+        super(PreDecrExpression, self).__init__(type, children)

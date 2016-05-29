@@ -56,7 +56,8 @@ t_TIMESEQUALS = r"\*="
 t_DIVEQUALS = r"/="
 t_PLUSEQUALS = r"\+="
 t_MINUSEQUALS = r"-="
-t_COMMA = ","
+t_COMMA = r","
+t_MODULO = r"%"
 
 
 #rule to track line numbers

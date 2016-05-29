@@ -3,90 +3,107 @@ Created by PLY version 3.8 (http://www.dabeaz.com/ply)
 Unused terminals:
 
     DO
-    ISEQUALS
-    NOT
     LBRACKET
     WHILE
     TRUE
     STRING
     COMMENT
-    LE
-    LT
-    SLITERAL
-    COMMA
     TIMESEQUALS
     DIVEQUALS
-    GT
-    MODULO
     PLUSPLUS
-    IS
     EQUALS
     PLUSEQUALS
-    GE
     MINUSMINUS
-    ID
     IF
-    AND
     FALSE
     INT
-    FLOAT
     BOOLEAN
-    CALL
     MINUSEQUALS
     RBRACKET
-    OR
 
 Grammar
 
-Rule 0     S' -> expression
-Rule 1     expression -> expression PLUS term
-Rule 2     expression -> expression MINUS term
-Rule 3     expression -> term
-Rule 4     term -> term TIMES factor
-Rule 5     term -> term DIVIDE factor
-Rule 6     term -> factor
-Rule 7     factor -> NUMBER
-Rule 8     factor -> LPAREN expression RPAREN
+Rule 0     S' -> statement_expression
+Rule 1     statement_expression -> simple_expression
+Rule 2     statement_expression -> func_call
+Rule 3     statement_expression -> atom
+Rule 4     simple_expression -> binary_op
+Rule 5     simple_expression -> unary_op
+Rule 6     simple_expression -> preincrement_expression
+Rule 7     simple_expression -> predecrement_expression
+Rule 8     func_call -> CALL identifier LPAREN arguments_list RPAREN
+Rule 9     func_call -> CALL identifier LPAREN RPAREN
+Rule 10    arguments_list -> atom
+Rule 11    arguments_list -> arguments_list COMMA atom
+Rule 12    atom -> identifier
+Rule 13    atom -> constant
+Rule 14    identifier -> ID
+Rule 15    constant -> NUMBER
+Rule 16    constant -> SLITERAL
+Rule 17    constant -> FLOAT
+Rule 18    binary_op -> statement_expression AND statement_expression
+Rule 19    binary_op -> statement_expression OR statement_expression
+Rule 20    binary_op -> statement_expression GT statement_expression
+Rule 21    binary_op -> statement_expression LT statement_expression
+Rule 22    binary_op -> statement_expression GE statement_expression
+Rule 23    binary_op -> statement_expression LE statement_expression
+Rule 24    binary_op -> statement_expression ISEQUALS statement_expression
+Rule 25    binary_op -> statement_expression MODULO statement_expression
+Rule 26    binary_op -> statement_expression PLUS statement_expression
+Rule 27    binary_op -> statement_expression MINUS statement_expression
+Rule 28    binary_op -> statement_expression TIMES statement_expression
+Rule 29    unary_op -> MINUS statement_expression
+Rule 30    unary_op -> PLUS statement_expression
+Rule 31    unary_op -> NOT statement_expression
+Rule 32    preincrement_expression -> PLUS PLUS statement_expression
+Rule 33    predecrement_expression -> MINUS MINUS statement_expression
+Rule 34    expression -> expression PLUS term
+Rule 35    expression -> expression MINUS term
+Rule 36    expression -> term
+Rule 37    term -> term TIMES factor
+Rule 38    term -> term DIVIDE factor
+Rule 39    term -> factor
+Rule 40    factor -> NUMBER
+Rule 41    factor -> LPAREN expression RPAREN
 
 Terminals, with rules where they appear
 
-AND                  : 
+AND                  : 18
 BOOLEAN              : 
-CALL                 : 
-COMMA                : 
+CALL                 : 8 9
+COMMA                : 11
 COMMENT              : 
 DIVEQUALS            : 
-DIVIDE               : 5
+DIVIDE               : 38
 DO                   : 
 EQUALS               : 
 FALSE                : 
-FLOAT                : 
-GE                   : 
-GT                   : 
-ID                   : 
+FLOAT                : 17
+GE                   : 22
+GT                   : 20
+ID                   : 14
 IF                   : 
 INT                  : 
-IS                   : 
-ISEQUALS             : 
+ISEQUALS             : 24
 LBRACKET             : 
-LE                   : 
-LPAREN               : 8
-LT                   : 
-MINUS                : 2
+LE                   : 23
+LPAREN               : 8 9 41
+LT                   : 21
+MINUS                : 27 29 33 33 35
 MINUSEQUALS          : 
 MINUSMINUS           : 
-MODULO               : 
-NOT                  : 
-NUMBER               : 7
-OR                   : 
-PLUS                 : 1
+MODULO               : 25
+NOT                  : 31
+NUMBER               : 15 40
+OR                   : 19
+PLUS                 : 26 30 32 32 34
 PLUSEQUALS           : 
 PLUSPLUS             : 
 RBRACKET             : 
-RPAREN               : 8
-SLITERAL             : 
+RPAREN               : 8 9 41
+SLITERAL             : 16
 STRING               : 
-TIMES                : 4
+TIMES                : 28 37
 TIMESEQUALS          : 
 TRUE                 : 
 WHILE                : 
@@ -94,221 +111,2116 @@ error                :
 
 Nonterminals, with rules where they appear
 
-expression           : 1 2 8 0
-factor               : 4 5 6
-term                 : 1 2 3 4 5
+arguments_list       : 8 11
+atom                 : 3 10 11
+binary_op            : 4
+constant             : 13
+expression           : 34 35 41
+factor               : 37 38 39
+func_call            : 2
+identifier           : 8 9 12
+predecrement_expression : 7
+preincrement_expression : 6
+simple_expression    : 1
+statement_expression : 18 18 19 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28 29 30 31 32 33 0
+term                 : 34 35 36 37 38
+unary_op             : 5
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . expression
-    (1) expression -> . expression PLUS term
-    (2) expression -> . expression MINUS term
-    (3) expression -> . term
-    (4) term -> . term TIMES factor
-    (5) term -> . term DIVIDE factor
-    (6) term -> . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (0) S' -> . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
 
-    NUMBER          shift and go to state 2
-    LPAREN          shift and go to state 3
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
 
-    term                           shift and go to state 1
-    expression                     shift and go to state 5
-    factor                         shift and go to state 4
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 9
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
 
 state 1
 
-    (3) expression -> term .
-    (4) term -> term . TIMES factor
-    (5) term -> term . DIVIDE factor
+    (13) atom -> constant .
 
-    RPAREN          reduce using rule 3 (expression -> term .)
-    PLUS            reduce using rule 3 (expression -> term .)
-    MINUS           reduce using rule 3 (expression -> term .)
-    $end            reduce using rule 3 (expression -> term .)
-    TIMES           shift and go to state 7
-    DIVIDE          shift and go to state 6
+    AND             reduce using rule 13 (atom -> constant .)
+    OR              reduce using rule 13 (atom -> constant .)
+    GT              reduce using rule 13 (atom -> constant .)
+    LT              reduce using rule 13 (atom -> constant .)
+    GE              reduce using rule 13 (atom -> constant .)
+    LE              reduce using rule 13 (atom -> constant .)
+    ISEQUALS        reduce using rule 13 (atom -> constant .)
+    MODULO          reduce using rule 13 (atom -> constant .)
+    PLUS            reduce using rule 13 (atom -> constant .)
+    MINUS           reduce using rule 13 (atom -> constant .)
+    TIMES           reduce using rule 13 (atom -> constant .)
+    $end            reduce using rule 13 (atom -> constant .)
+    RPAREN          reduce using rule 13 (atom -> constant .)
+    COMMA           reduce using rule 13 (atom -> constant .)
 
 
 state 2
 
-    (7) factor -> NUMBER .
+    (6) simple_expression -> preincrement_expression .
 
-    TIMES           reduce using rule 7 (factor -> NUMBER .)
-    DIVIDE          reduce using rule 7 (factor -> NUMBER .)
-    RPAREN          reduce using rule 7 (factor -> NUMBER .)
-    PLUS            reduce using rule 7 (factor -> NUMBER .)
-    MINUS           reduce using rule 7 (factor -> NUMBER .)
-    $end            reduce using rule 7 (factor -> NUMBER .)
+    AND             reduce using rule 6 (simple_expression -> preincrement_expression .)
+    OR              reduce using rule 6 (simple_expression -> preincrement_expression .)
+    GT              reduce using rule 6 (simple_expression -> preincrement_expression .)
+    LT              reduce using rule 6 (simple_expression -> preincrement_expression .)
+    GE              reduce using rule 6 (simple_expression -> preincrement_expression .)
+    LE              reduce using rule 6 (simple_expression -> preincrement_expression .)
+    ISEQUALS        reduce using rule 6 (simple_expression -> preincrement_expression .)
+    MODULO          reduce using rule 6 (simple_expression -> preincrement_expression .)
+    PLUS            reduce using rule 6 (simple_expression -> preincrement_expression .)
+    MINUS           reduce using rule 6 (simple_expression -> preincrement_expression .)
+    TIMES           reduce using rule 6 (simple_expression -> preincrement_expression .)
+    $end            reduce using rule 6 (simple_expression -> preincrement_expression .)
 
 
 state 3
 
-    (8) factor -> LPAREN . expression RPAREN
-    (1) expression -> . expression PLUS term
-    (2) expression -> . expression MINUS term
-    (3) expression -> . term
-    (4) term -> . term TIMES factor
-    (5) term -> . term DIVIDE factor
-    (6) term -> . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (15) constant -> NUMBER .
 
-    NUMBER          shift and go to state 2
-    LPAREN          shift and go to state 3
+    AND             reduce using rule 15 (constant -> NUMBER .)
+    OR              reduce using rule 15 (constant -> NUMBER .)
+    GT              reduce using rule 15 (constant -> NUMBER .)
+    LT              reduce using rule 15 (constant -> NUMBER .)
+    GE              reduce using rule 15 (constant -> NUMBER .)
+    LE              reduce using rule 15 (constant -> NUMBER .)
+    ISEQUALS        reduce using rule 15 (constant -> NUMBER .)
+    MODULO          reduce using rule 15 (constant -> NUMBER .)
+    PLUS            reduce using rule 15 (constant -> NUMBER .)
+    MINUS           reduce using rule 15 (constant -> NUMBER .)
+    TIMES           reduce using rule 15 (constant -> NUMBER .)
+    $end            reduce using rule 15 (constant -> NUMBER .)
+    RPAREN          reduce using rule 15 (constant -> NUMBER .)
+    COMMA           reduce using rule 15 (constant -> NUMBER .)
 
-    term                           shift and go to state 1
-    expression                     shift and go to state 8
-    factor                         shift and go to state 4
 
 state 4
 
-    (6) term -> factor .
+    (5) simple_expression -> unary_op .
 
-    TIMES           reduce using rule 6 (term -> factor .)
-    DIVIDE          reduce using rule 6 (term -> factor .)
-    RPAREN          reduce using rule 6 (term -> factor .)
-    PLUS            reduce using rule 6 (term -> factor .)
-    MINUS           reduce using rule 6 (term -> factor .)
-    $end            reduce using rule 6 (term -> factor .)
+    AND             reduce using rule 5 (simple_expression -> unary_op .)
+    OR              reduce using rule 5 (simple_expression -> unary_op .)
+    GT              reduce using rule 5 (simple_expression -> unary_op .)
+    LT              reduce using rule 5 (simple_expression -> unary_op .)
+    GE              reduce using rule 5 (simple_expression -> unary_op .)
+    LE              reduce using rule 5 (simple_expression -> unary_op .)
+    ISEQUALS        reduce using rule 5 (simple_expression -> unary_op .)
+    MODULO          reduce using rule 5 (simple_expression -> unary_op .)
+    PLUS            reduce using rule 5 (simple_expression -> unary_op .)
+    MINUS           reduce using rule 5 (simple_expression -> unary_op .)
+    TIMES           reduce using rule 5 (simple_expression -> unary_op .)
+    $end            reduce using rule 5 (simple_expression -> unary_op .)
 
 
 state 5
 
-    (0) S' -> expression .
-    (1) expression -> expression . PLUS term
-    (2) expression -> expression . MINUS term
+    (1) statement_expression -> simple_expression .
 
-    PLUS            shift and go to state 9
-    MINUS           shift and go to state 10
+    AND             reduce using rule 1 (statement_expression -> simple_expression .)
+    OR              reduce using rule 1 (statement_expression -> simple_expression .)
+    GT              reduce using rule 1 (statement_expression -> simple_expression .)
+    LT              reduce using rule 1 (statement_expression -> simple_expression .)
+    GE              reduce using rule 1 (statement_expression -> simple_expression .)
+    LE              reduce using rule 1 (statement_expression -> simple_expression .)
+    ISEQUALS        reduce using rule 1 (statement_expression -> simple_expression .)
+    MODULO          reduce using rule 1 (statement_expression -> simple_expression .)
+    PLUS            reduce using rule 1 (statement_expression -> simple_expression .)
+    MINUS           reduce using rule 1 (statement_expression -> simple_expression .)
+    TIMES           reduce using rule 1 (statement_expression -> simple_expression .)
+    $end            reduce using rule 1 (statement_expression -> simple_expression .)
 
 
 state 6
 
-    (5) term -> term DIVIDE . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (29) unary_op -> MINUS . statement_expression
+    (33) predecrement_expression -> MINUS . MINUS statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
 
-    NUMBER          shift and go to state 2
-    LPAREN          shift and go to state 3
+    MINUS           shift and go to state 19
+    CALL            shift and go to state 16
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
 
-    factor                         shift and go to state 11
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 20
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
 
 state 7
 
-    (4) term -> term TIMES . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (7) simple_expression -> predecrement_expression .
 
-    NUMBER          shift and go to state 2
-    LPAREN          shift and go to state 3
+    AND             reduce using rule 7 (simple_expression -> predecrement_expression .)
+    OR              reduce using rule 7 (simple_expression -> predecrement_expression .)
+    GT              reduce using rule 7 (simple_expression -> predecrement_expression .)
+    LT              reduce using rule 7 (simple_expression -> predecrement_expression .)
+    GE              reduce using rule 7 (simple_expression -> predecrement_expression .)
+    LE              reduce using rule 7 (simple_expression -> predecrement_expression .)
+    ISEQUALS        reduce using rule 7 (simple_expression -> predecrement_expression .)
+    MODULO          reduce using rule 7 (simple_expression -> predecrement_expression .)
+    PLUS            reduce using rule 7 (simple_expression -> predecrement_expression .)
+    MINUS           reduce using rule 7 (simple_expression -> predecrement_expression .)
+    TIMES           reduce using rule 7 (simple_expression -> predecrement_expression .)
+    $end            reduce using rule 7 (simple_expression -> predecrement_expression .)
 
-    factor                         shift and go to state 12
 
 state 8
 
-    (8) factor -> LPAREN expression . RPAREN
-    (1) expression -> expression . PLUS term
-    (2) expression -> expression . MINUS term
+    (30) unary_op -> PLUS . statement_expression
+    (32) preincrement_expression -> PLUS . PLUS statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
 
-    RPAREN          shift and go to state 13
-    PLUS            shift and go to state 9
-    MINUS           shift and go to state 10
+    PLUS            shift and go to state 21
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
 
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 22
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
 
 state 9
 
-    (1) expression -> expression PLUS . term
-    (4) term -> . term TIMES factor
-    (5) term -> . term DIVIDE factor
-    (6) term -> . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (0) S' -> statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
 
-    NUMBER          shift and go to state 2
-    LPAREN          shift and go to state 3
+    AND             shift and go to state 23
+    OR              shift and go to state 33
+    GT              shift and go to state 24
+    LT              shift and go to state 29
+    GE              shift and go to state 27
+    LE              shift and go to state 30
+    ISEQUALS        shift and go to state 26
+    MODULO          shift and go to state 25
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 32
 
-    term                           shift and go to state 14
-    factor                         shift and go to state 4
 
 state 10
 
-    (2) expression -> expression MINUS . term
-    (4) term -> . term TIMES factor
-    (5) term -> . term DIVIDE factor
-    (6) term -> . factor
-    (7) factor -> . NUMBER
-    (8) factor -> . LPAREN expression RPAREN
+    (4) simple_expression -> binary_op .
 
-    NUMBER          shift and go to state 2
-    LPAREN          shift and go to state 3
+    AND             reduce using rule 4 (simple_expression -> binary_op .)
+    OR              reduce using rule 4 (simple_expression -> binary_op .)
+    GT              reduce using rule 4 (simple_expression -> binary_op .)
+    LT              reduce using rule 4 (simple_expression -> binary_op .)
+    GE              reduce using rule 4 (simple_expression -> binary_op .)
+    LE              reduce using rule 4 (simple_expression -> binary_op .)
+    ISEQUALS        reduce using rule 4 (simple_expression -> binary_op .)
+    MODULO          reduce using rule 4 (simple_expression -> binary_op .)
+    PLUS            reduce using rule 4 (simple_expression -> binary_op .)
+    MINUS           reduce using rule 4 (simple_expression -> binary_op .)
+    TIMES           reduce using rule 4 (simple_expression -> binary_op .)
+    $end            reduce using rule 4 (simple_expression -> binary_op .)
 
-    term                           shift and go to state 15
-    factor                         shift and go to state 4
 
 state 11
 
-    (5) term -> term DIVIDE factor .
+    (16) constant -> SLITERAL .
 
-    TIMES           reduce using rule 5 (term -> term DIVIDE factor .)
-    DIVIDE          reduce using rule 5 (term -> term DIVIDE factor .)
-    RPAREN          reduce using rule 5 (term -> term DIVIDE factor .)
-    PLUS            reduce using rule 5 (term -> term DIVIDE factor .)
-    MINUS           reduce using rule 5 (term -> term DIVIDE factor .)
-    $end            reduce using rule 5 (term -> term DIVIDE factor .)
+    AND             reduce using rule 16 (constant -> SLITERAL .)
+    OR              reduce using rule 16 (constant -> SLITERAL .)
+    GT              reduce using rule 16 (constant -> SLITERAL .)
+    LT              reduce using rule 16 (constant -> SLITERAL .)
+    GE              reduce using rule 16 (constant -> SLITERAL .)
+    LE              reduce using rule 16 (constant -> SLITERAL .)
+    ISEQUALS        reduce using rule 16 (constant -> SLITERAL .)
+    MODULO          reduce using rule 16 (constant -> SLITERAL .)
+    PLUS            reduce using rule 16 (constant -> SLITERAL .)
+    MINUS           reduce using rule 16 (constant -> SLITERAL .)
+    TIMES           reduce using rule 16 (constant -> SLITERAL .)
+    $end            reduce using rule 16 (constant -> SLITERAL .)
+    RPAREN          reduce using rule 16 (constant -> SLITERAL .)
+    COMMA           reduce using rule 16 (constant -> SLITERAL .)
 
 
 state 12
 
-    (4) term -> term TIMES factor .
+    (3) statement_expression -> atom .
 
-    TIMES           reduce using rule 4 (term -> term TIMES factor .)
-    DIVIDE          reduce using rule 4 (term -> term TIMES factor .)
-    RPAREN          reduce using rule 4 (term -> term TIMES factor .)
-    PLUS            reduce using rule 4 (term -> term TIMES factor .)
-    MINUS           reduce using rule 4 (term -> term TIMES factor .)
-    $end            reduce using rule 4 (term -> term TIMES factor .)
+    AND             reduce using rule 3 (statement_expression -> atom .)
+    OR              reduce using rule 3 (statement_expression -> atom .)
+    GT              reduce using rule 3 (statement_expression -> atom .)
+    LT              reduce using rule 3 (statement_expression -> atom .)
+    GE              reduce using rule 3 (statement_expression -> atom .)
+    LE              reduce using rule 3 (statement_expression -> atom .)
+    ISEQUALS        reduce using rule 3 (statement_expression -> atom .)
+    MODULO          reduce using rule 3 (statement_expression -> atom .)
+    PLUS            reduce using rule 3 (statement_expression -> atom .)
+    MINUS           reduce using rule 3 (statement_expression -> atom .)
+    TIMES           reduce using rule 3 (statement_expression -> atom .)
+    $end            reduce using rule 3 (statement_expression -> atom .)
 
 
 state 13
 
-    (8) factor -> LPAREN expression RPAREN .
+    (14) identifier -> ID .
 
-    TIMES           reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    DIVIDE          reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    PLUS            reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    MINUS           reduce using rule 8 (factor -> LPAREN expression RPAREN .)
-    $end            reduce using rule 8 (factor -> LPAREN expression RPAREN .)
+    AND             reduce using rule 14 (identifier -> ID .)
+    OR              reduce using rule 14 (identifier -> ID .)
+    GT              reduce using rule 14 (identifier -> ID .)
+    LT              reduce using rule 14 (identifier -> ID .)
+    GE              reduce using rule 14 (identifier -> ID .)
+    LE              reduce using rule 14 (identifier -> ID .)
+    ISEQUALS        reduce using rule 14 (identifier -> ID .)
+    MODULO          reduce using rule 14 (identifier -> ID .)
+    PLUS            reduce using rule 14 (identifier -> ID .)
+    MINUS           reduce using rule 14 (identifier -> ID .)
+    TIMES           reduce using rule 14 (identifier -> ID .)
+    $end            reduce using rule 14 (identifier -> ID .)
+    RPAREN          reduce using rule 14 (identifier -> ID .)
+    COMMA           reduce using rule 14 (identifier -> ID .)
+    LPAREN          reduce using rule 14 (identifier -> ID .)
 
 
 state 14
 
-    (1) expression -> expression PLUS term .
-    (4) term -> term . TIMES factor
-    (5) term -> term . DIVIDE factor
+    (2) statement_expression -> func_call .
 
-    RPAREN          reduce using rule 1 (expression -> expression PLUS term .)
-    PLUS            reduce using rule 1 (expression -> expression PLUS term .)
-    MINUS           reduce using rule 1 (expression -> expression PLUS term .)
-    $end            reduce using rule 1 (expression -> expression PLUS term .)
-    TIMES           shift and go to state 7
-    DIVIDE          shift and go to state 6
+    AND             reduce using rule 2 (statement_expression -> func_call .)
+    OR              reduce using rule 2 (statement_expression -> func_call .)
+    GT              reduce using rule 2 (statement_expression -> func_call .)
+    LT              reduce using rule 2 (statement_expression -> func_call .)
+    GE              reduce using rule 2 (statement_expression -> func_call .)
+    LE              reduce using rule 2 (statement_expression -> func_call .)
+    ISEQUALS        reduce using rule 2 (statement_expression -> func_call .)
+    MODULO          reduce using rule 2 (statement_expression -> func_call .)
+    PLUS            reduce using rule 2 (statement_expression -> func_call .)
+    MINUS           reduce using rule 2 (statement_expression -> func_call .)
+    TIMES           reduce using rule 2 (statement_expression -> func_call .)
+    $end            reduce using rule 2 (statement_expression -> func_call .)
 
 
 state 15
 
-    (2) expression -> expression MINUS term .
-    (4) term -> term . TIMES factor
-    (5) term -> term . DIVIDE factor
+    (17) constant -> FLOAT .
 
-    RPAREN          reduce using rule 2 (expression -> expression MINUS term .)
-    PLUS            reduce using rule 2 (expression -> expression MINUS term .)
-    MINUS           reduce using rule 2 (expression -> expression MINUS term .)
-    $end            reduce using rule 2 (expression -> expression MINUS term .)
-    TIMES           shift and go to state 7
-    DIVIDE          shift and go to state 6
+    AND             reduce using rule 17 (constant -> FLOAT .)
+    OR              reduce using rule 17 (constant -> FLOAT .)
+    GT              reduce using rule 17 (constant -> FLOAT .)
+    LT              reduce using rule 17 (constant -> FLOAT .)
+    GE              reduce using rule 17 (constant -> FLOAT .)
+    LE              reduce using rule 17 (constant -> FLOAT .)
+    ISEQUALS        reduce using rule 17 (constant -> FLOAT .)
+    MODULO          reduce using rule 17 (constant -> FLOAT .)
+    PLUS            reduce using rule 17 (constant -> FLOAT .)
+    MINUS           reduce using rule 17 (constant -> FLOAT .)
+    TIMES           reduce using rule 17 (constant -> FLOAT .)
+    $end            reduce using rule 17 (constant -> FLOAT .)
+    RPAREN          reduce using rule 17 (constant -> FLOAT .)
+    COMMA           reduce using rule 17 (constant -> FLOAT .)
 
+
+state 16
+
+    (8) func_call -> CALL . identifier LPAREN arguments_list RPAREN
+    (9) func_call -> CALL . identifier LPAREN RPAREN
+    (14) identifier -> . ID
+
+    ID              shift and go to state 13
+
+    identifier                     shift and go to state 34
+
+state 17
+
+    (31) unary_op -> NOT . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 35
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 18
+
+    (12) atom -> identifier .
+
+    AND             reduce using rule 12 (atom -> identifier .)
+    OR              reduce using rule 12 (atom -> identifier .)
+    GT              reduce using rule 12 (atom -> identifier .)
+    LT              reduce using rule 12 (atom -> identifier .)
+    GE              reduce using rule 12 (atom -> identifier .)
+    LE              reduce using rule 12 (atom -> identifier .)
+    ISEQUALS        reduce using rule 12 (atom -> identifier .)
+    MODULO          reduce using rule 12 (atom -> identifier .)
+    PLUS            reduce using rule 12 (atom -> identifier .)
+    MINUS           reduce using rule 12 (atom -> identifier .)
+    TIMES           reduce using rule 12 (atom -> identifier .)
+    $end            reduce using rule 12 (atom -> identifier .)
+    RPAREN          reduce using rule 12 (atom -> identifier .)
+    COMMA           reduce using rule 12 (atom -> identifier .)
+
+
+state 19
+
+    (33) predecrement_expression -> MINUS MINUS . statement_expression
+    (29) unary_op -> MINUS . statement_expression
+    (33) predecrement_expression -> MINUS . MINUS statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    MINUS           shift and go to state 19
+    CALL            shift and go to state 16
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 36
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 20
+
+    (29) unary_op -> MINUS statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    OR              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    GT              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    LT              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    GE              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    LE              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    ISEQUALS        reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    PLUS            reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    MINUS           reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    $end            reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    MODULO          shift and go to state 25
+    TIMES           shift and go to state 32
+
+  ! MODULO          [ reduce using rule 29 (unary_op -> MINUS statement_expression .) ]
+  ! TIMES           [ reduce using rule 29 (unary_op -> MINUS statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 28 ]
+
+
+state 21
+
+    (32) preincrement_expression -> PLUS PLUS . statement_expression
+    (30) unary_op -> PLUS . statement_expression
+    (32) preincrement_expression -> PLUS . PLUS statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    PLUS            shift and go to state 21
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 37
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 22
+
+    (30) unary_op -> PLUS statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    OR              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    GT              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    LT              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    GE              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    LE              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    ISEQUALS        reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    PLUS            reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    MINUS           reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    $end            reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    MODULO          shift and go to state 25
+    TIMES           shift and go to state 32
+
+  ! MODULO          [ reduce using rule 30 (unary_op -> PLUS statement_expression .) ]
+  ! TIMES           [ reduce using rule 30 (unary_op -> PLUS statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 28 ]
+
+
+state 23
+
+    (18) binary_op -> statement_expression AND . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 38
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 24
+
+    (20) binary_op -> statement_expression GT . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 39
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 25
+
+    (25) binary_op -> statement_expression MODULO . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 40
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 26
+
+    (24) binary_op -> statement_expression ISEQUALS . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 41
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 27
+
+    (22) binary_op -> statement_expression GE . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 42
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 28
+
+    (27) binary_op -> statement_expression MINUS . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 43
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 29
+
+    (21) binary_op -> statement_expression LT . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 44
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 30
+
+    (23) binary_op -> statement_expression LE . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 45
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 31
+
+    (26) binary_op -> statement_expression PLUS . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 46
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 32
+
+    (28) binary_op -> statement_expression TIMES . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 47
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 33
+
+    (19) binary_op -> statement_expression OR . statement_expression
+    (1) statement_expression -> . simple_expression
+    (2) statement_expression -> . func_call
+    (3) statement_expression -> . atom
+    (4) simple_expression -> . binary_op
+    (5) simple_expression -> . unary_op
+    (6) simple_expression -> . preincrement_expression
+    (7) simple_expression -> . predecrement_expression
+    (8) func_call -> . CALL identifier LPAREN arguments_list RPAREN
+    (9) func_call -> . CALL identifier LPAREN RPAREN
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (18) binary_op -> . statement_expression AND statement_expression
+    (19) binary_op -> . statement_expression OR statement_expression
+    (20) binary_op -> . statement_expression GT statement_expression
+    (21) binary_op -> . statement_expression LT statement_expression
+    (22) binary_op -> . statement_expression GE statement_expression
+    (23) binary_op -> . statement_expression LE statement_expression
+    (24) binary_op -> . statement_expression ISEQUALS statement_expression
+    (25) binary_op -> . statement_expression MODULO statement_expression
+    (26) binary_op -> . statement_expression PLUS statement_expression
+    (27) binary_op -> . statement_expression MINUS statement_expression
+    (28) binary_op -> . statement_expression TIMES statement_expression
+    (29) unary_op -> . MINUS statement_expression
+    (30) unary_op -> . PLUS statement_expression
+    (31) unary_op -> . NOT statement_expression
+    (32) preincrement_expression -> . PLUS PLUS statement_expression
+    (33) predecrement_expression -> . MINUS MINUS statement_expression
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    CALL            shift and go to state 16
+    MINUS           shift and go to state 6
+    PLUS            shift and go to state 8
+    NOT             shift and go to state 17
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    func_call                      shift and go to state 14
+    constant                       shift and go to state 1
+    predecrement_expression        shift and go to state 7
+    binary_op                      shift and go to state 10
+    preincrement_expression        shift and go to state 2
+    unary_op                       shift and go to state 4
+    atom                           shift and go to state 12
+    statement_expression           shift and go to state 48
+    simple_expression              shift and go to state 5
+    identifier                     shift and go to state 18
+
+state 34
+
+    (8) func_call -> CALL identifier . LPAREN arguments_list RPAREN
+    (9) func_call -> CALL identifier . LPAREN RPAREN
+
+    LPAREN          shift and go to state 49
+
+
+state 35
+
+    (31) unary_op -> NOT statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+  ! shift/reduce conflict for GT resolved as shift
+  ! shift/reduce conflict for LT resolved as shift
+  ! shift/reduce conflict for GE resolved as shift
+  ! shift/reduce conflict for LE resolved as shift
+  ! shift/reduce conflict for ISEQUALS resolved as shift
+  ! shift/reduce conflict for MODULO resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+    $end            reduce using rule 31 (unary_op -> NOT statement_expression .)
+    AND             shift and go to state 23
+    OR              shift and go to state 33
+    GT              shift and go to state 24
+    LT              shift and go to state 29
+    GE              shift and go to state 27
+    LE              shift and go to state 30
+    ISEQUALS        shift and go to state 26
+    MODULO          shift and go to state 25
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 32
+
+  ! AND             [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! OR              [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! GT              [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! LT              [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! GE              [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! LE              [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! ISEQUALS        [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! MODULO          [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! PLUS            [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! MINUS           [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+  ! TIMES           [ reduce using rule 31 (unary_op -> NOT statement_expression .) ]
+
+
+state 36
+
+    (33) predecrement_expression -> MINUS MINUS statement_expression .
+    (29) unary_op -> MINUS statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+  ! reduce/reduce conflict for AND resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for OR resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for GT resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for LT resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for GE resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for LE resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for ISEQUALS resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for MODULO resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for PLUS resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for MINUS resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for TIMES resolved using rule 29 (unary_op -> MINUS statement_expression .)
+  ! reduce/reduce conflict for $end resolved using rule 29 (unary_op -> MINUS statement_expression .)
+    AND             reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    OR              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    GT              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    LT              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    GE              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    LE              reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    ISEQUALS        reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    PLUS            reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    MINUS           reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    $end            reduce using rule 29 (unary_op -> MINUS statement_expression .)
+    MODULO          shift and go to state 25
+    TIMES           shift and go to state 32
+
+  ! AND             [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! OR              [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! GT              [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! LT              [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! GE              [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! LE              [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! ISEQUALS        [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! MODULO          [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! PLUS            [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! MINUS           [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! TIMES           [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! $end            [ reduce using rule 33 (predecrement_expression -> MINUS MINUS statement_expression .) ]
+  ! MODULO          [ reduce using rule 29 (unary_op -> MINUS statement_expression .) ]
+  ! TIMES           [ reduce using rule 29 (unary_op -> MINUS statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 28 ]
+
+
+state 37
+
+    (32) preincrement_expression -> PLUS PLUS statement_expression .
+    (30) unary_op -> PLUS statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+  ! reduce/reduce conflict for AND resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for OR resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for GT resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for LT resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for GE resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for LE resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for ISEQUALS resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for MODULO resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for PLUS resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for MINUS resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for TIMES resolved using rule 30 (unary_op -> PLUS statement_expression .)
+  ! reduce/reduce conflict for $end resolved using rule 30 (unary_op -> PLUS statement_expression .)
+    AND             reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    OR              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    GT              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    LT              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    GE              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    LE              reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    ISEQUALS        reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    PLUS            reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    MINUS           reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    $end            reduce using rule 30 (unary_op -> PLUS statement_expression .)
+    MODULO          shift and go to state 25
+    TIMES           shift and go to state 32
+
+  ! AND             [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! OR              [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! GT              [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! LT              [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! GE              [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! LE              [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! ISEQUALS        [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! MODULO          [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! PLUS            [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! MINUS           [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! TIMES           [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! $end            [ reduce using rule 32 (preincrement_expression -> PLUS PLUS statement_expression .) ]
+  ! MODULO          [ reduce using rule 30 (unary_op -> PLUS statement_expression .) ]
+  ! TIMES           [ reduce using rule 30 (unary_op -> PLUS statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 28 ]
+
+
+state 38
+
+    (18) binary_op -> statement_expression AND statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 18 (binary_op -> statement_expression AND statement_expression .)
+    OR              reduce using rule 18 (binary_op -> statement_expression AND statement_expression .)
+    ISEQUALS        reduce using rule 18 (binary_op -> statement_expression AND statement_expression .)
+    $end            reduce using rule 18 (binary_op -> statement_expression AND statement_expression .)
+    GT              shift and go to state 24
+    LT              shift and go to state 29
+    GE              shift and go to state 27
+    LE              shift and go to state 30
+    MODULO          shift and go to state 25
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 32
+
+  ! GT              [ reduce using rule 18 (binary_op -> statement_expression AND statement_expression .) ]
+  ! LT              [ reduce using rule 18 (binary_op -> statement_expression AND statement_expression .) ]
+  ! GE              [ reduce using rule 18 (binary_op -> statement_expression AND statement_expression .) ]
+  ! LE              [ reduce using rule 18 (binary_op -> statement_expression AND statement_expression .) ]
+  ! MODULO          [ reduce using rule 18 (binary_op -> statement_expression AND statement_expression .) ]
+  ! PLUS            [ reduce using rule 18 (binary_op -> statement_expression AND statement_expression .) ]
+  ! MINUS           [ reduce using rule 18 (binary_op -> statement_expression AND statement_expression .) ]
+  ! TIMES           [ reduce using rule 18 (binary_op -> statement_expression AND statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+
+
+state 39
+
+    (20) binary_op -> statement_expression GT statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 20 (binary_op -> statement_expression GT statement_expression .)
+    OR              reduce using rule 20 (binary_op -> statement_expression GT statement_expression .)
+    GT              reduce using rule 20 (binary_op -> statement_expression GT statement_expression .)
+    LT              reduce using rule 20 (binary_op -> statement_expression GT statement_expression .)
+    GE              reduce using rule 20 (binary_op -> statement_expression GT statement_expression .)
+    LE              reduce using rule 20 (binary_op -> statement_expression GT statement_expression .)
+    ISEQUALS        reduce using rule 20 (binary_op -> statement_expression GT statement_expression .)
+    $end            reduce using rule 20 (binary_op -> statement_expression GT statement_expression .)
+    MODULO          shift and go to state 25
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 32
+
+  ! MODULO          [ reduce using rule 20 (binary_op -> statement_expression GT statement_expression .) ]
+  ! PLUS            [ reduce using rule 20 (binary_op -> statement_expression GT statement_expression .) ]
+  ! MINUS           [ reduce using rule 20 (binary_op -> statement_expression GT statement_expression .) ]
+  ! TIMES           [ reduce using rule 20 (binary_op -> statement_expression GT statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+
+
+state 40
+
+    (25) binary_op -> statement_expression MODULO statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    OR              reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    GT              reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    LT              reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    GE              reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    LE              reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    ISEQUALS        reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    MODULO          reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    PLUS            reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    MINUS           reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    TIMES           reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+    $end            reduce using rule 25 (binary_op -> statement_expression MODULO statement_expression .)
+
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+  ! MODULO          [ shift and go to state 25 ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 28 ]
+  ! TIMES           [ shift and go to state 32 ]
+
+
+state 41
+
+    (24) binary_op -> statement_expression ISEQUALS statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+  ! shift/reduce conflict for GT resolved as shift
+  ! shift/reduce conflict for LT resolved as shift
+  ! shift/reduce conflict for GE resolved as shift
+  ! shift/reduce conflict for LE resolved as shift
+  ! shift/reduce conflict for ISEQUALS resolved as shift
+  ! shift/reduce conflict for MODULO resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+    $end            reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .)
+    AND             shift and go to state 23
+    OR              shift and go to state 33
+    GT              shift and go to state 24
+    LT              shift and go to state 29
+    GE              shift and go to state 27
+    LE              shift and go to state 30
+    ISEQUALS        shift and go to state 26
+    MODULO          shift and go to state 25
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 32
+
+  ! AND             [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! OR              [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! GT              [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! LT              [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! GE              [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! LE              [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! ISEQUALS        [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! MODULO          [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! PLUS            [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! MINUS           [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+  ! TIMES           [ reduce using rule 24 (binary_op -> statement_expression ISEQUALS statement_expression .) ]
+
+
+state 42
+
+    (22) binary_op -> statement_expression GE statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 22 (binary_op -> statement_expression GE statement_expression .)
+    OR              reduce using rule 22 (binary_op -> statement_expression GE statement_expression .)
+    GT              reduce using rule 22 (binary_op -> statement_expression GE statement_expression .)
+    LT              reduce using rule 22 (binary_op -> statement_expression GE statement_expression .)
+    GE              reduce using rule 22 (binary_op -> statement_expression GE statement_expression .)
+    LE              reduce using rule 22 (binary_op -> statement_expression GE statement_expression .)
+    ISEQUALS        reduce using rule 22 (binary_op -> statement_expression GE statement_expression .)
+    $end            reduce using rule 22 (binary_op -> statement_expression GE statement_expression .)
+    MODULO          shift and go to state 25
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 32
+
+  ! MODULO          [ reduce using rule 22 (binary_op -> statement_expression GE statement_expression .) ]
+  ! PLUS            [ reduce using rule 22 (binary_op -> statement_expression GE statement_expression .) ]
+  ! MINUS           [ reduce using rule 22 (binary_op -> statement_expression GE statement_expression .) ]
+  ! TIMES           [ reduce using rule 22 (binary_op -> statement_expression GE statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+
+
+state 43
+
+    (27) binary_op -> statement_expression MINUS statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    OR              reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    GT              reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    LT              reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    GE              reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    LE              reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    ISEQUALS        reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    PLUS            reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    MINUS           reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    $end            reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .)
+    MODULO          shift and go to state 25
+    TIMES           shift and go to state 32
+
+  ! MODULO          [ reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .) ]
+  ! TIMES           [ reduce using rule 27 (binary_op -> statement_expression MINUS statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 28 ]
+
+
+state 44
+
+    (21) binary_op -> statement_expression LT statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 21 (binary_op -> statement_expression LT statement_expression .)
+    OR              reduce using rule 21 (binary_op -> statement_expression LT statement_expression .)
+    GT              reduce using rule 21 (binary_op -> statement_expression LT statement_expression .)
+    LT              reduce using rule 21 (binary_op -> statement_expression LT statement_expression .)
+    GE              reduce using rule 21 (binary_op -> statement_expression LT statement_expression .)
+    LE              reduce using rule 21 (binary_op -> statement_expression LT statement_expression .)
+    ISEQUALS        reduce using rule 21 (binary_op -> statement_expression LT statement_expression .)
+    $end            reduce using rule 21 (binary_op -> statement_expression LT statement_expression .)
+    MODULO          shift and go to state 25
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 32
+
+  ! MODULO          [ reduce using rule 21 (binary_op -> statement_expression LT statement_expression .) ]
+  ! PLUS            [ reduce using rule 21 (binary_op -> statement_expression LT statement_expression .) ]
+  ! MINUS           [ reduce using rule 21 (binary_op -> statement_expression LT statement_expression .) ]
+  ! TIMES           [ reduce using rule 21 (binary_op -> statement_expression LT statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+
+
+state 45
+
+    (23) binary_op -> statement_expression LE statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 23 (binary_op -> statement_expression LE statement_expression .)
+    OR              reduce using rule 23 (binary_op -> statement_expression LE statement_expression .)
+    GT              reduce using rule 23 (binary_op -> statement_expression LE statement_expression .)
+    LT              reduce using rule 23 (binary_op -> statement_expression LE statement_expression .)
+    GE              reduce using rule 23 (binary_op -> statement_expression LE statement_expression .)
+    LE              reduce using rule 23 (binary_op -> statement_expression LE statement_expression .)
+    ISEQUALS        reduce using rule 23 (binary_op -> statement_expression LE statement_expression .)
+    $end            reduce using rule 23 (binary_op -> statement_expression LE statement_expression .)
+    MODULO          shift and go to state 25
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 32
+
+  ! MODULO          [ reduce using rule 23 (binary_op -> statement_expression LE statement_expression .) ]
+  ! PLUS            [ reduce using rule 23 (binary_op -> statement_expression LE statement_expression .) ]
+  ! MINUS           [ reduce using rule 23 (binary_op -> statement_expression LE statement_expression .) ]
+  ! TIMES           [ reduce using rule 23 (binary_op -> statement_expression LE statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+
+
+state 46
+
+    (26) binary_op -> statement_expression PLUS statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    OR              reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    GT              reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    LT              reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    GE              reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    LE              reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    ISEQUALS        reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    PLUS            reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    MINUS           reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    $end            reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .)
+    MODULO          shift and go to state 25
+    TIMES           shift and go to state 32
+
+  ! MODULO          [ reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .) ]
+  ! TIMES           [ reduce using rule 26 (binary_op -> statement_expression PLUS statement_expression .) ]
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 28 ]
+
+
+state 47
+
+    (28) binary_op -> statement_expression TIMES statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    AND             reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    OR              reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    GT              reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    LT              reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    GE              reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    LE              reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    ISEQUALS        reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    MODULO          reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    PLUS            reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    MINUS           reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    TIMES           reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+    $end            reduce using rule 28 (binary_op -> statement_expression TIMES statement_expression .)
+
+  ! AND             [ shift and go to state 23 ]
+  ! OR              [ shift and go to state 33 ]
+  ! GT              [ shift and go to state 24 ]
+  ! LT              [ shift and go to state 29 ]
+  ! GE              [ shift and go to state 27 ]
+  ! LE              [ shift and go to state 30 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+  ! MODULO          [ shift and go to state 25 ]
+  ! PLUS            [ shift and go to state 31 ]
+  ! MINUS           [ shift and go to state 28 ]
+  ! TIMES           [ shift and go to state 32 ]
+
+
+state 48
+
+    (19) binary_op -> statement_expression OR statement_expression .
+    (18) binary_op -> statement_expression . AND statement_expression
+    (19) binary_op -> statement_expression . OR statement_expression
+    (20) binary_op -> statement_expression . GT statement_expression
+    (21) binary_op -> statement_expression . LT statement_expression
+    (22) binary_op -> statement_expression . GE statement_expression
+    (23) binary_op -> statement_expression . LE statement_expression
+    (24) binary_op -> statement_expression . ISEQUALS statement_expression
+    (25) binary_op -> statement_expression . MODULO statement_expression
+    (26) binary_op -> statement_expression . PLUS statement_expression
+    (27) binary_op -> statement_expression . MINUS statement_expression
+    (28) binary_op -> statement_expression . TIMES statement_expression
+
+    OR              reduce using rule 19 (binary_op -> statement_expression OR statement_expression .)
+    ISEQUALS        reduce using rule 19 (binary_op -> statement_expression OR statement_expression .)
+    $end            reduce using rule 19 (binary_op -> statement_expression OR statement_expression .)
+    AND             shift and go to state 23
+    GT              shift and go to state 24
+    LT              shift and go to state 29
+    GE              shift and go to state 27
+    LE              shift and go to state 30
+    MODULO          shift and go to state 25
+    PLUS            shift and go to state 31
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 32
+
+  ! AND             [ reduce using rule 19 (binary_op -> statement_expression OR statement_expression .) ]
+  ! GT              [ reduce using rule 19 (binary_op -> statement_expression OR statement_expression .) ]
+  ! LT              [ reduce using rule 19 (binary_op -> statement_expression OR statement_expression .) ]
+  ! GE              [ reduce using rule 19 (binary_op -> statement_expression OR statement_expression .) ]
+  ! LE              [ reduce using rule 19 (binary_op -> statement_expression OR statement_expression .) ]
+  ! MODULO          [ reduce using rule 19 (binary_op -> statement_expression OR statement_expression .) ]
+  ! PLUS            [ reduce using rule 19 (binary_op -> statement_expression OR statement_expression .) ]
+  ! MINUS           [ reduce using rule 19 (binary_op -> statement_expression OR statement_expression .) ]
+  ! TIMES           [ reduce using rule 19 (binary_op -> statement_expression OR statement_expression .) ]
+  ! OR              [ shift and go to state 33 ]
+  ! ISEQUALS        [ shift and go to state 26 ]
+
+
+state 49
+
+    (8) func_call -> CALL identifier LPAREN . arguments_list RPAREN
+    (9) func_call -> CALL identifier LPAREN . RPAREN
+    (10) arguments_list -> . atom
+    (11) arguments_list -> . arguments_list COMMA atom
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    RPAREN          shift and go to state 50
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    arguments_list                 shift and go to state 51
+    identifier                     shift and go to state 18
+    constant                       shift and go to state 1
+    atom                           shift and go to state 52
+
+state 50
+
+    (9) func_call -> CALL identifier LPAREN RPAREN .
+
+    AND             reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    OR              reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    GT              reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    LT              reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    GE              reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    LE              reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    ISEQUALS        reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    MODULO          reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    PLUS            reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    MINUS           reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    TIMES           reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+    $end            reduce using rule 9 (func_call -> CALL identifier LPAREN RPAREN .)
+
+
+state 51
+
+    (8) func_call -> CALL identifier LPAREN arguments_list . RPAREN
+    (11) arguments_list -> arguments_list . COMMA atom
+
+    RPAREN          shift and go to state 53
+    COMMA           shift and go to state 54
+
+
+state 52
+
+    (10) arguments_list -> atom .
+
+    RPAREN          reduce using rule 10 (arguments_list -> atom .)
+    COMMA           reduce using rule 10 (arguments_list -> atom .)
+
+
+state 53
+
+    (8) func_call -> CALL identifier LPAREN arguments_list RPAREN .
+
+    AND             reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    OR              reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    GT              reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    LT              reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    GE              reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    LE              reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    ISEQUALS        reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    MODULO          reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    PLUS            reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    MINUS           reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    TIMES           reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+    $end            reduce using rule 8 (func_call -> CALL identifier LPAREN arguments_list RPAREN .)
+
+
+state 54
+
+    (11) arguments_list -> arguments_list COMMA . atom
+    (12) atom -> . identifier
+    (13) atom -> . constant
+    (14) identifier -> . ID
+    (15) constant -> . NUMBER
+    (16) constant -> . SLITERAL
+    (17) constant -> . FLOAT
+
+    ID              shift and go to state 13
+    NUMBER          shift and go to state 3
+    SLITERAL        shift and go to state 11
+    FLOAT           shift and go to state 15
+
+    identifier                     shift and go to state 18
+    constant                       shift and go to state 1
+    atom                           shift and go to state 55
+
+state 55
+
+    (11) arguments_list -> arguments_list COMMA atom .
+
+    RPAREN          reduce using rule 11 (arguments_list -> arguments_list COMMA atom .)
+    COMMA           reduce using rule 11 (arguments_list -> arguments_list COMMA atom .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for AND in state 35 resolved as shift
+WARNING: shift/reduce conflict for OR in state 35 resolved as shift
+WARNING: shift/reduce conflict for GT in state 35 resolved as shift
+WARNING: shift/reduce conflict for LT in state 35 resolved as shift
+WARNING: shift/reduce conflict for GE in state 35 resolved as shift
+WARNING: shift/reduce conflict for LE in state 35 resolved as shift
+WARNING: shift/reduce conflict for ISEQUALS in state 35 resolved as shift
+WARNING: shift/reduce conflict for MODULO in state 35 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 35 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 35 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 35 resolved as shift
+WARNING: shift/reduce conflict for AND in state 41 resolved as shift
+WARNING: shift/reduce conflict for OR in state 41 resolved as shift
+WARNING: shift/reduce conflict for GT in state 41 resolved as shift
+WARNING: shift/reduce conflict for LT in state 41 resolved as shift
+WARNING: shift/reduce conflict for GE in state 41 resolved as shift
+WARNING: shift/reduce conflict for LE in state 41 resolved as shift
+WARNING: shift/reduce conflict for ISEQUALS in state 41 resolved as shift
+WARNING: shift/reduce conflict for MODULO in state 41 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 41 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 41 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 41 resolved as shift
+WARNING: reduce/reduce conflict in state 36 resolved using rule (unary_op -> MINUS statement_expression)
+WARNING: rejected rule (predecrement_expression -> MINUS MINUS statement_expression) in state 36
+WARNING: reduce/reduce conflict in state 37 resolved using rule (unary_op -> PLUS statement_expression)
+WARNING: rejected rule (preincrement_expression -> PLUS PLUS statement_expression) in state 37
+WARNING: Rule (predecrement_expression -> MINUS MINUS statement_expression) is never reduced
+WARNING: Rule (preincrement_expression -> PLUS PLUS statement_expression) is never reduced

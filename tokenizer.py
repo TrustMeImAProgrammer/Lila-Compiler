@@ -13,32 +13,24 @@ reserved = {
     'mod' : 'MODULO',
     'integer' : 'INT',
     'string' : 'STRING',
-    'float' : 'FLOAT',
+    'real' : 'REAL',
     'boolean' : 'BOOLEAN',
     'true' : 'TRUE',
     'false' : 'FALSE',
+    'character' : 'CHAR'
 }
 tokens = ["SLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
           "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", 
           "EQUALS", "TIMESEQUALS", "DIVEQUALS", "PLUSEQUALS", "MINUSEQUALS",
           "PLUSPLUS", "MINUSMINUS", "COMMENT", 'COMMA', 'ID', 'NUMBER'] + list(reserved.values())
 
-def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value, 'ID') # Check for reserved words
-    return t
+#
+#	All tokens defined by functions are added in the same order as they appear in the lexer file.
+#	Tokens defined by strings are added next by sorting them in order of decreasing regular expression
+#	length (longer expressions are added first).
+#
 
-def t_NUMBER(t):
-    r"\d+"
-    t.value = int(t.value)
-    return t
-
-def t_FLOAT(t):
-    r"[\d]*\.[\d]*"
-    t.value = float(t.value)
-    return t
-
-t_SLITERAL = r"'([^']|'')*'"
+t_SLITERAL = r"'([^']|'')*'" #Lila uses single quotes for strings and characters, two single quotes can be used when it's necessary to represent one inside the string
 t_LPAREN = r"\("
 t_RPAREN = r"\)"
 t_LBRACKET = r"\{"
@@ -58,7 +50,18 @@ t_PLUSEQUALS = r"\+="
 t_MINUSEQUALS = r"-="
 t_COMMA = r","
 t_MODULO = r"%"
+t_CHARLITERAL = r"'.'"
 
+
+def t_NUMBER(t):
+    r"\d+"
+    t.value = int(t.value)
+    return t
+
+def t_FLOAT(t):
+    r"[\d]*\.[\d]*"
+    t.value = float(t.value)
+    return t
 
 #rule to track line numbers
 def t_newline(t):
@@ -68,6 +71,11 @@ def t_newline(t):
 def t_COMMENT(t):
     r"\/\/.*"
     pass
+
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value, 'ID') # Check for reserved words
+    return t
 
 #ignored characters
 t_ignore = " \t"

@@ -11,11 +11,37 @@ precedence = (
          ('left', 'TIMES', 'DIVIDE', 'MODULO')
      )
 
+def p_program(p):
+    """program: statements"""
+    p[0] = p[1]
 
+def p_statement(p):
+    """statement :	declaration
+		 |	addition
+    		 |	substraction
+		 |	multiplication
+		 |	division
+    """
+    p[0] = p[1]
+
+def p_declaration(p):
+    """declaration :	INTEGER ID EQUALS NUMBER
+		   |	REAL ID EQUALS FLOAT
+		   | 	STRING ID EQUALS SLITERAL
+    		   |	CHARACTER ID EQUALS
+		   |	BOOLEAN ID EQUALS TRUE
+		   | 	BOOLEAN ID EQUALS FALSE
+    """
+    
+
+
+
+
+#rule for expressions, which also count as statemets
 def p_statement_expression(p):
-    """statement_expression :	 	simple_expression
-		    		 |	func_call
-		    		 |	atom
+    """statement_expression :	simple_expression
+		    	    |	func_call
+    			    |	atom
     """
     p[0] = p[1]
 
@@ -153,7 +179,6 @@ def p_term_factor(p):
 
 def p_factor_num(p):
     'factor : NUMBER'
-    print(p[0][1])
     p[0] = p[1]
 
 def p_factor_expr(p):
@@ -169,10 +194,21 @@ parser = yacc.yacc()
 while True:
     try:
         s = raw_input('calc > ')
-        print("length of s : %s" % len(s))
     except EOFError:
         break;
     if not s: continue
     result = parser.parse(s)
     print(result)
 
+
+#Following code produces "syntax error"
+# with open("data.txt", "r") as f:
+#     for line in f:
+#         try:
+#             print("length of s : %s" % len(line))
+#             result = parser.parse(line)
+#             #result.show()
+#             print result
+#         except EOFError:
+#             break
+# f.close()

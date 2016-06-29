@@ -20,9 +20,10 @@ def p_translation_unit(p):
     			|	translation_unit statement
     """
     if len(p) == 3:
-        p[0] = ast.TranslationUnit('translation unit', [p[1], p[2]])
-    else:
+        p[1].children.append(p[2])
         p[0] = p[1]
+    else:
+        p[0] = ast.TranslationUnit(p[0], [p[1]])
 
 
 #-------------
@@ -82,7 +83,10 @@ def p_arguments_list(p):
     """arguments_list : 	expression
 		      |		arguments_list COMMA expression"""
     if len(p) == 2:
-        p[0] = ast.ExprList()
+        p[0] = ast.ExprList(p[0], p[1])
+    else:
+        p[1].append(p[3])
+        p[0] = p[1]
 
 def p_expression(p):
     """statement_expression :	simple_expression

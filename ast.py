@@ -1,6 +1,6 @@
 class Node(object):
-    def __init__(self, type, children):
-        self.type = type #the type of the expression, Lila is strong, statically typed
+    def __init__(self, name, left, right):
+        self.name = name
         if children:
             self.children = children
         else:
@@ -9,25 +9,30 @@ class Node(object):
         pass
 
 class ProgramNode(Node):
-    def __init__(self, type, children):
-        super(ProgramNode, self).__init__(type, children)
+    pass
 
 class BinaryOp(Node):
-    def __init__(self, type, children):
-        super(BinaryOp, self).__init__(type, children)
+    pass
 
 class UnaryOp(Node):
-    def __init__(self, type, children):
-        super(UnaryOp, self).__init__(type, children)
+    pass
 
 class FuncCall(Node):
-    def __init__(self, type, children):
-        super(FuncCall, self).__init__(type, children)
+    def __init__(self, name, children, id):
+        self.id = id
+        super(FuncCall, self).__init__(name, children)
 
 class PreIncrExpression(Node):
-    def __init__(self, type, children):
-        super(PreIncrExpression, self).__init__(type, children)
+    pass
 
 class PreDecrExpression(Node):
-    def __init__(self, type, children):
-        super(PreDecrExpression, self).__init__(type, children)
+    pass
+
+class Declaration(Node):
+    pass
+
+		   |	REAL ID EQUALS FLOAT
+		   | 	STRING ID EQUALS SLITERAL
+    		   |	CHARACTER ID EQUALS
+		   |	BOOLEAN ID EQUALS TRUE
+		   | 	BOOLEAN ID EQUALS FALSE

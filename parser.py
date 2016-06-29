@@ -16,23 +16,24 @@ def p_program(p):
     p[0] = p[1]
 
 def p_statement(p):
-    """statement :	declaration
-		 |	addition
-    		 |	substraction
-		 |	multiplication
-		 |	division
+    """statement :	assignment
+		 |	func_call
+    		 |	if_statement
+		 |	for_statement
+		 |	while_statement
+		 | 	return_statement
     """
     p[0] = p[1]
 
-def p_declaration(p):
+def assignment(p):
+    'assignment : ID EQUALS expression'
+    p[0] = ast.Assignment()
+def p_assignment_int(p):
     """declaration :	INTEGER ID EQUALS NUMBER
-		   |	REAL ID EQUALS FLOAT
-		   | 	STRING ID EQUALS SLITERAL
-    		   |	CHARACTER ID EQUALS
-		   |	BOOLEAN ID EQUALS TRUE
-		   | 	BOOLEAN ID EQUALS FALSE
+    		   |	INTEGER multiplication
+		   |	INTEGER addition
     """
-    
+    p[0] = ast.Assignment()
 
 
 
@@ -126,6 +127,10 @@ def p_binary_op_minus(p):
 
 def p_binary_op_times(p):
     'binary_op : statement_expression TIMES statement_expression'
+    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+
+def p_binary_op_divide(p):
+    'binary_op : statement_expression DIVIDE statement_expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 ######

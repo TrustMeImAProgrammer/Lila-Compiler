@@ -12,34 +12,79 @@ precedence = (
      )
 
 def p_program(p):
-    """program: statements"""
+    """program: translation_unit"""
     p[0] = p[1]
+
+def p_translation_unit(p):
+    """translation_unit :	statement
+    			|	translation_unit statement
+    """
+    if len(p) == 3:
+        p[0] = ast.TranslationUnit('translation unit', [p[1], p[2]])
+    else:
+        p[0] = p[1]
+
+
+#-------------
+# Statements
+#-------------
 
 def p_statement(p):
     """statement :	assignment
 		 |	func_call
-    		 |	if_statement
-		 |	for_statement
-		 |	while_statement
 		 | 	return_statement
     """
     p[0] = p[1]
 
-def assignment(p):
-    'assignment : ID EQUALS expression'
-    p[0] = ast.Assignment()
-def p_assignment_int(p):
-    """declaration :	INTEGER ID EQUALS NUMBER
-    		   |	INTEGER multiplication
-		   |	INTEGER addition
+def p_statement_block(p):
+    """statement :     	if_statement
+		 |	for_statement
+		 |	while_statement
     """
-    p[0] = ast.Assignment()
+    p[0] = p[1]
+
+#for now its not possible to just declare without assignment
+def p_assignment_declaration(p):
+    """assignment :	INTEGER ID EQUALS expression
+    		  |	REAL ID EQUALS expression
+		  | 	STRING ID EQUALS expression
+    		  |	CHARACTER ID expression
+		  |	BOOLEAN ID EQUALS expression
+    """
+    p[0] = Declaration('declaration', [p[1], p[2], p[4]])
+
+def p_assignment(p):
+    'assignment : ID EQUALS expression'
+    p[0] = ast.Assignment(p[0], [p[1], p[3]])
+
+def p_assignment_increment(p):
+    'assignment : ID PLUS PLUS'
+    p[0] = ast.Assignment('plus_plus', p[1])
+
+def p_assignment_decrement(p):
+    'assignment : ID MINUS MINUS'
+    p[0] = ast.Assignment('minus_minus', p[1])
+
+def p_func_call(p):
+    """func_call : 	CALL identifier LPAREN arguments_list RPAREN
+    		 |	CALL identifier LPAREN RPAREN"""
+    if len(p) == 6:
+        p[0] = ast.FuncCall(p[0], p[2], p[4])
+    else:
+        p[0] = ast.FuncCall(p[0], p[2], None)
 
 
+#------------
+# Expressions
+#------------
 
+def p_arguments_list(p):
+    """arguments_list : 	expression
+		      |		arguments_list COMMA expression"""
+    if len(p) == 2:
+        p[0] = ast.ExprList()
 
-#rule for expressions, which also count as statemets
-def p_statement_expression(p):
+def p_expression(p):
     """statement_expression :	simple_expression
 		    	    |	func_call
     			    |	atom
@@ -49,20 +94,8 @@ def p_statement_expression(p):
 def p_simple_expression(p):
     """simple_expression :	binary_op
     			 |	unary_op
-    			 |	preincrement_expression
-   			 |	predecrement_expression
     """
     p[0] = p[1]
-
-## Function calls
-def p_func_call(p):
-    """func_call 	: CALL identifier LPAREN arguments_list RPAREN
-    			| CALL identifier LPAREN RPAREN"""
-    p[0] = ast.FuncCall(p[2], p[4] if len(p) == 6 else None)
-
-def p_arguments_list(p):
-    """arguments_list : 	atom
-		      |		arguments_list COMMA atom"""
 
  ## Atomic expressions
 def p_atom_expression_1(p):
@@ -79,6 +112,8 @@ def p_constant(p):
     """constant :	NUMBER
 		|	SLITERAL
     		|	FLOAT
+		|	TRUE
+		|	FALSE
     """
     p[0] = p[1]
     
@@ -146,49 +181,6 @@ def p_unary_op_plus(p):
 def p_unary_op_not(p):
     'unary_op : NOT statement_expression'
     p[0] = ast.UnaryOp(p[1], p[2])
-
-## Increments
-
-def p_preincrement_expression(p):
-    'preincrement_expression : PLUS PLUS statement_expression'
-    p[0] = ast.PreIncrExpression([p[1], p[2]], p[3])
-
-def p_predecrement_expression(p):
-    'predecrement_expression : MINUS MINUS statement_expression'
-    p[0] = ast.PreDecrExpression([p[1], p[2]], p[3])
-    
-##########################
-def p_expression_plus(p):
-    'expression : expression PLUS term'
-    p[0] = p[1] + p[3]
-
-def p_expression_minus(p):
-    'expression : expression MINUS term'
-    p[0] = p[1] - p[3]
-
-def p_expression_term(p):
-    'expression : term'
-    p[0] = p[1]
-
-def p_term_times(p):
-    'term : term TIMES factor'
-    p[0] = p[1] * p[3]
-
-def p_term_divide(p):
-    'term : term DIVIDE factor'
-    p[0] = p[1] / p[3]
-
-def p_term_factor(p):
-    'term : factor'
-    p[0] = p[1]
-
-def p_factor_num(p):
-    'factor : NUMBER'
-    p[0] = p[1]
-
-def p_factor_expr(p):
-    'factor : LPAREN expression RPAREN'
-    p[0] = p[2]
 
 #Error rule for syntax errors
 def p_error(p):

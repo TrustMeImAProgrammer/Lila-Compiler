@@ -20,10 +20,10 @@ def p_translation_unit(p):
     			|	translation_unit statement
     """
     if len(p) == 3:
-        p[1].children.append(p[2])
+        p[1]['children'].append(p[2])
         p[0] = p[1]
     else:
-        p[0] = ast.TranslationUnit('translation_unit', [p[1]])
+        p[0] = {'type': 'translation_unit', 'children': [p[1]]}
 
 
 #-------------
@@ -41,38 +41,39 @@ def p_statement(p):
 def p_statement_block(p):
     """statement :     	if_statement
 		 |	while_statement
+		 |	for_statement
     """
     p[0] = p[1]
 
 def p_assignment(p):
     'assignment : ID EQUALS expression'
-    p[0] = ast.Assignment('=', None, [p[1], p[3]])
+    p[0] = {'type': 'assignment', 'children': [p[1], p[3]]}
 
 #for now its not possible to just declare without assignment
-def p_assignment_declaration(p):
+def p_decl_assignment(p):
     """assignment : type_info ID EQUALS expression
     """
-    p[0] = ast.Assignment('=', p[1], [p[2], p[4]])
+    p[0] = {'type':'var_declaration', 'type': p[1], 'children': [p[2], p[4]]}
 
 def p_assignment_increment(p):
     'assignment : ID PLUSPLUS'
-    p[0] = ast.Assignment('plus_plus', None, [p[1]])
+    p[0] = {'type': 'plus_plus', 'children': [p[1]]}
 
 def p_assignment_decrement(p):
     'assignment : ID MINUSMINUS'
-    p[0] = ast.Assignment('minus_minus', [p[1]])
+    p[0] = {'type': 'minus_minus', 'children': [p[1]]}
 
 def p_func_call(p):
     """func_call : 	CALL identifier LPAREN arguments_list RPAREN
     		 |	CALL identifier LPAREN RPAREN"""
     if len(p) == 6:
-        p[0] = ast.FuncCall('func_call',[p[2], p[4]])
+        p[0] = {'type': 'func_call', 'name': p[2], 'children': [p[4]]}
     else:
-        p[0] = ast.FuncCall('func_call', [p[2]])
+        p[0] = {'type': 'func_call', 'name': p[2], 'children': []}
 
 def p_return_statement(p):
     'return_statement : RETURN expression'
-    p[0] = ast.Return('return', [p[2]])
+    p[0] = {'type': 'return', 'children': [p[2]]}
 
 #nested function declarations are not allowed, unlike gcc an error will be thrown,
 #this must be done during tree traversal
@@ -81,19 +82,28 @@ def p_func_declaration(p):
     			|	FUNCTION ID LPAREN RPAREN LBRACKET translation_unit RBRACKET
     """
     if len(p) == 9:
-        p[0] = ast.FuncDecl('func_declaration', p[4], [p[2], p[7]])
+        p[0] = {'type': 'func_declaration', 'name':p[2], 'parameters':p[4], 'children': [p[7]]}
     else:
-        p[0] = ast.FuncDecl('func_declaration', None, [p[2], p[6]])
+        p[0] = {'type': 'func_declaration', 'name': p[2], 'parameters': None, 'children': [p[6]]}
 
+#need to check if the binary op returns a boolean
 def p_if_statement(p):
     'if_statement : IF binary_op LBRACKET translation_unit RBRACKET'
-    p[0] = ast.If('if', [p[2], p[4]])
+    p[0] = {'type': 'if_statement', 'else_block': None, 'children': [p[2], p[4]]}
+
+def p_if_else_statement(p):
+    'if_statement : IF binary_op LBRACKET translation_unit RBRACKET ELSE LBRACKET translation_unit RBRACKET'
+    p[0] = {'type': 'if_statement', 'else_block': p[8], 'children': [p[2], p[4]]}
 
 def p_while_statement(p):
     'while_statement : WHILE binary_op LBRACKET translation_unit RBRACKET'
-    p[0] = ast.While('while', [p[2], p[4]])
+    p[0] = {'type': 'while_statement', 'children': [p[2], p[4]]}
 
-#TODO: add for and else rules
+def p_for_statement(p):
+    """for_statement :	FOR ID IN ID
+    		     |	FOR ID IN func_call
+    """
+    p[0] = {'type': 'for_statement', 'children': [p[2], p[4]]}
 
 #-----------
 # Lists
@@ -105,21 +115,22 @@ def p_params_list(p):
 	           |	params_list COMMA parameter_declaration
     """
     if len(p) == 2:
-        p[0] = ast.ParamsList('params_list', [p[1]])
+        p[0] = {'type': 'params_list', 'children': [p[1]]}
     else:
-        p[1].append(p[3])
+        p[1]['children'].append(p[3])
+        p[0] = p[1]
 
 def p_parameter_declaration(p):
     'parameter_declaration : type_info ID'
-    p[0] = ast.ParamDecl('param_decl', [p[1], p[2]])
+    p[0] = {'type': 'param_decl', 'children': [p[1], p[2]]}
 
 def p_arguments_list(p):
     """arguments_list : 	expression
 		      |		arguments_list COMMA expression"""
     if len(p) == 2:
-        p[0] = ast.ArgList('arg_list', [p[1]])
+        p[0] = {'type': 'arg_list', 'children': [p[1]]}
     else:
-        p[1].append(p[3])
+        p[1]['children'].append(p[3])
         p[0] = p[1]
     
 #------------
@@ -162,67 +173,67 @@ def p_constant(p):
 ## Boolean expressions
 def p_binary_op_and(p):
     'binary_op : expression AND expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': 'and', 'children': [p[1], p[3]]}
 
 def p_binary_op_or(p):
     'binary_op : expression OR expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': 'or', 'children': [p[1], p[3]]}
 
 def p_binary_op_gt(p):
     'binary_op : expression GT expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': '>', 'children': [p[1], p[3]]}
 
 def p_binary_op_lt(p):
     'binary_op : expression LT expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': '<', 'children': [p[1], p[3]]}
 
 def p_binary_op_ge(p):
     'binary_op : expression GE expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': '>=', 'children': [p[1], p[3]]}
 
 def p_binary_op_le(p):
     'binary_op : expression LE expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': '<=', 'children': [p[1], p[3]]}
 
 def p_binary_op_equals(p):
     'binary_op : expression ISEQUALS expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': 'isequals', 'children': [p[1], p[3]]}
     
 ## Numeric expressions
 
 def p_binary_op_mod(p):
     'binary_op : expression MODULO expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type:' '%', 'children': [p[1], p[3]]}
 
 def p_binary_op_plus(p):
     'binary_op : expression PLUS expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': '+', 'children': [p[1], p[3]]}
 
 def p_binary_op_minus(p):
     'binary_op : expression MINUS expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': '-', 'children': [p[1], p[3]]}
 
 def p_binary_op_times(p):
     'binary_op : expression TIMES expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': '*', 'children': [p[1], p[3]]}
 
 def p_binary_op_divide(p):
     'binary_op : expression DIVIDE expression'
-    p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
+    p[0] = {'type': '/', 'children': [p[1], p[3]]}
 
 ######
 
 def p_unary_op_minus(p):
     'unary_op : MINUS expression'
-    p[0] = ast.UnaryOp(p[1], [p[2]])
+    p[0] = -p[1]
 
-def p_unary_op_plus(p):
-    'unary_op : PLUS expression'
-    p[0] = ast.UnaryOp(p[1], [p[2]])
+# def p_unary_op_plus(p):
+#     'unary_op : PLUS expression'
+#     p[0] = ast.UnaryOp(p[1], [p[2]])
 
 def p_unary_op_not(p):
     'unary_op : NOT expression'
-    p[0] = ast.UnaryOp(p[1], [p[2]])
+    p[0] = {'type': 'not', 'children': [p[2]]}
 
 def p_type_info(p):
     """type_info : INT

@@ -2,6 +2,7 @@ import lex
 
 reserved = {
     'if' : 'IF',
+    'else' : 'ELSE'
     'while' : 'WHILE',
     'do' : 'DO',
 #    'is' : 'IS',
@@ -19,7 +20,8 @@ reserved = {
     'false' : 'FALSE',
     'character' : 'CHAR',
     'return' : 'RETURN',
-    'function' : 'FUNCTION'
+    'function' : 'FUNCTION',
+    'for' : 'FOR'
 }
 tokens = ["SLITERAL", "CHARLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
           "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", 
@@ -59,7 +61,11 @@ t_CHARLITERAL = r"'.'"
 
 def t_NUMBER(t):
     r"\d+"
-    t.value = int(t.value)
+    try:
+        t.value = int(t.value)
+    except ValueError:
+        print "Integer value too large" + t.value
+        t.value = 0
     return t
 
 def t_FLOAT(t):

@@ -13,6 +13,6 @@ def pretty_print(node):
                 for child in node.children:
                     pretty_print(child)
         else:
-            print node
+            print "this is not a node " + str(node)
 
 pretty_print(ast)

@@ -87,11 +87,13 @@ def p_func_declaration(p):
 
 def p_if_statement(p):
     'if_statement : IF binary_op LBRACKET translation_unit RBRACKET'
-    p[0] = ast.If(p[0], [p[2], p[4]])
+    p[0] = ast.If('if', [p[2], p[4]])
 
 def p_while_statement(p):
     'while_statement : WHILE binary_op LBRACKET translation_unit RBRACKET'
-    p[0] = ast.While(p[0], [p[2], p[4]])
+    p[0] = ast.While('while', [p[2], p[4]])
+
+#TODO: add for and else rules
 
 #-----------
 # Lists
@@ -138,7 +140,7 @@ def p_simple_expression(p):
     p[0] = p[1]
 
  ## Atomic expressions
-def p_atom_expression_1(p):
+def p_atom_expression_(p):
     """atom :	identifier
     	    |	constant
     """
@@ -235,14 +237,12 @@ def p_type_info(p):
 def p_error(p):
     print("Syntax error")
 
-
-#Build the parser
-par = yacc.yacc()
-
 def parse(source):
+    par = yacc.yacc()
     return par.parse(source)
 
 if __name__ == "__main__":
+    parser = yacc.yacc()
     while True:
         try:
             s = raw_input('calc > ')

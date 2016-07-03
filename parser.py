@@ -12,7 +12,7 @@ precedence = (
      )
 
 def p_program(p):
-    """program: translation_unit"""
+    """program : translation_unit"""
     p[0] = p[1]
 
 def p_translation_unit(p):
@@ -23,7 +23,7 @@ def p_translation_unit(p):
         p[1].children.append(p[2])
         p[0] = p[1]
     else:
-        p[0] = ast.TranslationUnit(p[0], [p[1]])
+        p[0] = ast.TranslationUnit('translation_unit', [p[1]])
 
 
 #-------------
@@ -34,64 +34,100 @@ def p_statement(p):
     """statement :	assignment
 		 |	func_call
 		 | 	return_statement
+		 | 	func_declaration
     """
     p[0] = p[1]
 
 def p_statement_block(p):
     """statement :     	if_statement
-		 |	for_statement
 		 |	while_statement
     """
     p[0] = p[1]
 
-#for now its not possible to just declare without assignment
-def p_assignment_declaration(p):
-    """assignment :	INTEGER ID EQUALS expression
-    		  |	REAL ID EQUALS expression
-		  | 	STRING ID EQUALS expression
-    		  |	CHARACTER ID expression
-		  |	BOOLEAN ID EQUALS expression
-    """
-    p[0] = Declaration('declaration', [p[1], p[2], p[4]])
-
 def p_assignment(p):
     'assignment : ID EQUALS expression'
-    p[0] = ast.Assignment(p[0], [p[1], p[3]])
+    p[0] = ast.Assignment('=', None, [p[1], p[3]])
+
+#for now its not possible to just declare without assignment
+def p_assignment_declaration(p):
+    """assignment : type_info ID EQUALS expression
+    """
+    p[0] = ast.Assignment('=', p[1], [p[2], p[4]])
 
 def p_assignment_increment(p):
-    'assignment : ID PLUS PLUS'
-    p[0] = ast.Assignment('plus_plus', p[1])
+    'assignment : ID PLUSPLUS'
+    p[0] = ast.Assignment('plus_plus', None, [p[1]])
 
 def p_assignment_decrement(p):
-    'assignment : ID MINUS MINUS'
-    p[0] = ast.Assignment('minus_minus', p[1])
+    'assignment : ID MINUSMINUS'
+    p[0] = ast.Assignment('minus_minus', [p[1]])
 
 def p_func_call(p):
     """func_call : 	CALL identifier LPAREN arguments_list RPAREN
     		 |	CALL identifier LPAREN RPAREN"""
     if len(p) == 6:
-        p[0] = ast.FuncCall(p[0], p[2], p[4])
+        p[0] = ast.FuncCall('func_call',[p[2], p[4]])
     else:
-        p[0] = ast.FuncCall(p[0], p[2], None)
+        p[0] = ast.FuncCall('func_call', [p[2]])
+
+def p_return_statement(p):
+    'return_statement : RETURN expression'
+    p[0] = ast.Return('return', [p[2]])
+
+#nested function declarations are not allowed, unlike gcc an error will be thrown,
+#this must be done during tree traversal
+def p_func_declaration(p):
+    """func_declaration :	FUNCTION ID LPAREN params_list RPAREN LBRACKET translation_unit RBRACKET
+    			|	FUNCTION ID LPAREN RPAREN LBRACKET translation_unit RBRACKET
+    """
+    if len(p) == 9:
+        p[0] = ast.FuncDecl('func_declaration', p[4], [p[2], p[7]])
+    else:
+        p[0] = ast.FuncDecl('func_declaration', None, [p[2], p[6]])
+
+def p_if_statement(p):
+    'if_statement : IF binary_op LBRACKET translation_unit RBRACKET'
+    p[0] = ast.If(p[0], [p[2], p[4]])
+
+def p_while_statement(p):
+    'while_statement : WHILE binary_op LBRACKET translation_unit RBRACKET'
+    p[0] = ast.While(p[0], [p[2], p[4]])
+
+#-----------
+# Lists
+#-----------
 
 
-#------------
-# Expressions
-#------------
+def p_params_list(p):
+    """params_list :	parameter_declaration
+	           |	params_list COMMA parameter_declaration
+    """
+    if len(p) == 2:
+        p[0] = ast.ParamsList('params_list', [p[1]])
+    else:
+        p[1].append(p[3])
+
+def p_parameter_declaration(p):
+    'parameter_declaration : type_info ID'
+    p[0] = ast.ParamDecl('param_decl', [p[1], p[2]])
 
 def p_arguments_list(p):
     """arguments_list : 	expression
 		      |		arguments_list COMMA expression"""
     if len(p) == 2:
-        p[0] = ast.ExprList(p[0], p[1])
+        p[0] = ast.ArgList('arg_list', [p[1]])
     else:
         p[1].append(p[3])
         p[0] = p[1]
+    
+#------------
+# Expressions
+#------------
 
 def p_expression(p):
-    """statement_expression :	simple_expression
-		    	    |	func_call
-    			    |	atom
+    """expression :	simple_expression
+	          |	func_call
+    		  |	atom
     """
     p[0] = p[1]
 
@@ -123,83 +159,98 @@ def p_constant(p):
     
 ## Boolean expressions
 def p_binary_op_and(p):
-    'binary_op : statement_expression AND statement_expression'
+    'binary_op : expression AND expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_or(p):
-    'binary_op : statement_expression OR statement_expression'
+    'binary_op : expression OR expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_gt(p):
-    'binary_op : statement_expression GT statement_expression'
+    'binary_op : expression GT expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_lt(p):
-    'binary_op : statement_expression LT statement_expression'
+    'binary_op : expression LT expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_ge(p):
-    'binary_op : statement_expression GE statement_expression'
+    'binary_op : expression GE expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_le(p):
-    'binary_op : statement_expression LE statement_expression'
+    'binary_op : expression LE expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_equals(p):
-    'binary_op : statement_expression ISEQUALS statement_expression'
+    'binary_op : expression ISEQUALS expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
     
 ## Numeric expressions
 
 def p_binary_op_mod(p):
-    'binary_op : statement_expression MODULO statement_expression'
+    'binary_op : expression MODULO expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_plus(p):
-    'binary_op : statement_expression PLUS statement_expression'
+    'binary_op : expression PLUS expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_minus(p):
-    'binary_op : statement_expression MINUS statement_expression'
+    'binary_op : expression MINUS expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_times(p):
-    'binary_op : statement_expression TIMES statement_expression'
+    'binary_op : expression TIMES expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 def p_binary_op_divide(p):
-    'binary_op : statement_expression DIVIDE statement_expression'
+    'binary_op : expression DIVIDE expression'
     p[0] = ast.BinaryOp(p[2], [p[1], p[3]])
 
 ######
 
 def p_unary_op_minus(p):
-    'unary_op : MINUS statement_expression'
-    p[0] = ast.UnaryOp(p[1], p[2])
+    'unary_op : MINUS expression'
+    p[0] = ast.UnaryOp(p[1], [p[2]])
 
 def p_unary_op_plus(p):
-    'unary_op : PLUS statement_expression'
-    p[0] = ast.UnaryOp(p[1], p[2])
+    'unary_op : PLUS expression'
+    p[0] = ast.UnaryOp(p[1], [p[2]])
 
 def p_unary_op_not(p):
-    'unary_op : NOT statement_expression'
-    p[0] = ast.UnaryOp(p[1], p[2])
+    'unary_op : NOT expression'
+    p[0] = ast.UnaryOp(p[1], [p[2]])
+
+def p_type_info(p):
+    """type_info : INT
+		 | STRING
+    		 | REAL
+		 | BOOLEAN
+		 | CHAR
+    """
+    p[0] = p[1]
 
 #Error rule for syntax errors
 def p_error(p):
     print("Syntax error")
 
+
 #Build the parser
-parser = yacc.yacc()
-while True:
-    try:
-        s = raw_input('calc > ')
-    except EOFError:
-        break;
-    if not s: continue
-    result = parser.parse(s)
-    print(result)
+par = yacc.yacc()
+
+def parse(source):
+    return par.parse(source)
+
+if __name__ == "__main__":
+    while True:
+        try:
+            s = raw_input('calc > ')
+        except EOFError:
+            break;
+        if not s: continue
+        result = par.parse(s)
+        print(result)
 
 
 #Following code produces "syntax error"

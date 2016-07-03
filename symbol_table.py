@@ -1,7 +1,8 @@
 class Symbol:
-    def __init__(self, name, type):
+    def __init__(self, name, type, kind):
         self.name = name
         self.type = type
+        self.kind = kind # kind = function, var, or parameter
 
 #--------------------------------
 #This is a stack of scopes, 

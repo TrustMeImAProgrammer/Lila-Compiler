@@ -17,12 +17,14 @@ reserved = {
     'boolean' : 'BOOLEAN',
     'true' : 'TRUE',
     'false' : 'FALSE',
-    'character' : 'CHAR'
+    'character' : 'CHAR',
+    'return' : 'RETURN',
+    'function' : 'FUNCTION'
 }
-tokens = ["SLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
+tokens = ["SLITERAL", "CHARLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
           "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", 
           "EQUALS", "TIMESEQUALS", "DIVEQUALS", "PLUSEQUALS", "MINUSEQUALS",
-          "PLUSPLUS", "MINUSMINUS", "COMMENT", 'COMMA', 'ID', 'NUMBER'] + list(reserved.values())
+          "PLUSPLUS", "MINUSMINUS", "COMMENT", 'COMMA', 'ID', 'NUMBER', 'FLOAT'] + list(reserved.values())
 
 #
 #	All tokens defined by functions are added in the same order as they appear in the lexer file.
@@ -48,6 +50,8 @@ t_TIMESEQUALS = r"\*="
 t_DIVEQUALS = r"/="
 t_PLUSEQUALS = r"\+="
 t_MINUSEQUALS = r"-="
+t_PLUSPLUS = r"\+\+"
+t_MINUSMINUS = r"--"
 t_COMMA = r","
 t_MODULO = r"%"
 t_CHARLITERAL = r"'.'"

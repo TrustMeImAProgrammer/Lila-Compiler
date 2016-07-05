@@ -1,4 +1,4 @@
-function square(integer x) {
+function square(integer x):returns integer{
 		 return x*x
 }
 

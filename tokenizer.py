@@ -2,7 +2,7 @@ import lex
 
 reserved = {
     'if' : 'IF',
-    'else' : 'ELSE'
+    'else' : 'ELSE',
     'while' : 'WHILE',
     'do' : 'DO',
 #    'is' : 'IS',
@@ -16,17 +16,18 @@ reserved = {
     'string' : 'STRING',
     'real' : 'REAL',
     'boolean' : 'BOOLEAN',
-    'true' : 'TRUE',
-    'false' : 'FALSE',
     'character' : 'CHAR',
     'return' : 'RETURN',
+    'returns' : 'RETURNS',
     'function' : 'FUNCTION',
-    'for' : 'FOR'
+    'for' : 'FOR',
+    'in' : 'IN',
+    'constant' : 'CONST'
 }
-tokens = ["SLITERAL", "CHARLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
-          "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", 
-          "EQUALS", "TIMESEQUALS", "DIVEQUALS", "PLUSEQUALS", "MINUSEQUALS",
-          "PLUSPLUS", "MINUSMINUS", "COMMENT", 'COMMA', 'ID', 'NUMBER', 'FLOAT'] + list(reserved.values())
+tokens = ["COLON", "SLITERAL", "CHARLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
+          "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", "EQUALS", 
+          "TIMESEQUALS", "DIVEQUALS", "PLUSEQUALS", "MINUSEQUALS", "PLUSPLUS", "MINUSMINUS", 
+          "COMMENT", 'COMMA', 'ID', 'NUMBER', 'FLOAT', 'TRUE', 'FALSE'] + list(reserved.values())
 
 #
 #	All tokens defined by functions are added in the same order as they appear in the lexer file.
@@ -34,7 +35,7 @@ tokens = ["SLITERAL", "CHARLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
 #	length (longer expressions are added first).
 #
 
-t_SLITERAL = r"'([^']|'')*'" #Lila uses single quotes for strings and characters, two single quotes can be used when it's necessary to represent one inside the string
+t_COLON = r":"
 t_LPAREN = r"\("
 t_RPAREN = r"\)"
 t_LBRACKET = r"\{"
@@ -59,6 +60,28 @@ t_MODULO = r"%"
 t_CHARLITERAL = r"'.'"
 
 
+#Lila uses single quotes for strings and characters, 
+#two single quotes can be used when it's necessary to represent one inside the string
+def t_SLITERAL(t):
+    r"'([^']|'')*'" 
+    t.value = str(t.value)
+    return t
+
+def t_FALSE(t):
+    r"FALSE"
+    t.value = False
+    return t
+
+def t_TRUE(t):
+    r"TRUE"
+    t.value = True
+    return t
+
+def t_FLOAT(t):
+    r"[\d]*\.[\d]*"
+    t.value = float(t.value)
+    return t
+
 def t_NUMBER(t):
     r"\d+"
     try:
@@ -66,11 +89,6 @@ def t_NUMBER(t):
     except ValueError:
         print "Integer value too large" + t.value
         t.value = 0
-    return t
-
-def t_FLOAT(t):
-    r"[\d]*\.[\d]*"
-    t.value = float(t.value)
     return t
 
 #rule to track line numbers
@@ -104,3 +122,5 @@ if __name__ == "__main__":
     lexer.input(data)
     for tok in lexer:
         print(tok)
+        print type(tok)
+        print tok.lineno

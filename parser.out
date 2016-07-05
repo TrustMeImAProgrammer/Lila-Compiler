@@ -12,15 +12,17 @@ Rule 6     expression -> expression DIVIDE expression
 Rule 7     expression -> MINUS expression
 Rule 8     expression -> LPAREN expression RPAREN
 Rule 9     expression -> NUMBER
-Rule 10    expression -> NAME
+Rule 10    expression -> FLOAT
+Rule 11    expression -> NAME
 
 Terminals, with rules where they appear
 
 DIVIDE               : 6
 EQUALS               : 1
+FLOAT                : 10
 LPAREN               : 8
 MINUS                : 4 7
-NAME                 : 1 10
+NAME                 : 1 11
 NUMBER               : 9
 PLUS                 : 3
 RPAREN               : 8
@@ -46,48 +48,62 @@ state 0
     (7) expression -> . MINUS expression
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . NUMBER
-    (10) expression -> . NAME
+    (10) expression -> . FLOAT
+    (11) expression -> . NAME
 
     NAME            shift and go to state 1
-    MINUS           shift and go to state 6
-    LPAREN          shift and go to state 4
+    MINUS           shift and go to state 7
+    LPAREN          shift and go to state 5
     NUMBER          shift and go to state 2
+    FLOAT           shift and go to state 3
 
-    expression                     shift and go to state 5
-    statement                      shift and go to state 3
+    expression                     shift and go to state 6
+    statement                      shift and go to state 4
 
 state 1
 
     (1) statement -> NAME . EQUALS expression
-    (10) expression -> NAME .
+    (11) expression -> NAME .
 
-    EQUALS          shift and go to state 7
-    PLUS            reduce using rule 10 (expression -> NAME .)
-    MINUS           reduce using rule 10 (expression -> NAME .)
-    TIMES           reduce using rule 10 (expression -> NAME .)
-    DIVIDE          reduce using rule 10 (expression -> NAME .)
-    $end            reduce using rule 10 (expression -> NAME .)
+    EQUALS          shift and go to state 8
+    PLUS            reduce using rule 11 (expression -> NAME .)
+    MINUS           reduce using rule 11 (expression -> NAME .)
+    TIMES           reduce using rule 11 (expression -> NAME .)
+    DIVIDE          reduce using rule 11 (expression -> NAME .)
+    $end            reduce using rule 11 (expression -> NAME .)
 
 
 state 2
 
     (9) expression -> NUMBER .
 
-    RPAREN          reduce using rule 9 (expression -> NUMBER .)
     PLUS            reduce using rule 9 (expression -> NUMBER .)
     MINUS           reduce using rule 9 (expression -> NUMBER .)
     TIMES           reduce using rule 9 (expression -> NUMBER .)
     DIVIDE          reduce using rule 9 (expression -> NUMBER .)
     $end            reduce using rule 9 (expression -> NUMBER .)
+    RPAREN          reduce using rule 9 (expression -> NUMBER .)
 
 
 state 3
+
+    (10) expression -> FLOAT .
+
+    PLUS            reduce using rule 10 (expression -> FLOAT .)
+    MINUS           reduce using rule 10 (expression -> FLOAT .)
+    TIMES           reduce using rule 10 (expression -> FLOAT .)
+    DIVIDE          reduce using rule 10 (expression -> FLOAT .)
+    $end            reduce using rule 10 (expression -> FLOAT .)
+    RPAREN          reduce using rule 10 (expression -> FLOAT .)
+
+
+state 4
 
     (0) S' -> statement .
 
 
 
-state 4
+state 5
 
     (8) expression -> LPAREN . expression RPAREN
     (3) expression -> . expression PLUS expression
@@ -97,16 +113,18 @@ state 4
     (7) expression -> . MINUS expression
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . NUMBER
-    (10) expression -> . NAME
+    (10) expression -> . FLOAT
+    (11) expression -> . NAME
 
-    MINUS           shift and go to state 6
-    LPAREN          shift and go to state 4
+    MINUS           shift and go to state 7
+    LPAREN          shift and go to state 5
     NUMBER          shift and go to state 2
-    NAME            shift and go to state 9
+    FLOAT           shift and go to state 3
+    NAME            shift and go to state 10
 
-    expression                     shift and go to state 8
+    expression                     shift and go to state 9
 
-state 5
+state 6
 
     (2) statement -> expression .
     (3) expression -> expression . PLUS expression
@@ -115,13 +133,13 @@ state 5
     (6) expression -> expression . DIVIDE expression
 
     $end            reduce using rule 2 (statement -> expression .)
-    PLUS            shift and go to state 10
-    MINUS           shift and go to state 12
-    TIMES           shift and go to state 13
-    DIVIDE          shift and go to state 11
+    PLUS            shift and go to state 11
+    MINUS           shift and go to state 13
+    TIMES           shift and go to state 14
+    DIVIDE          shift and go to state 12
 
 
-state 6
+state 7
 
     (7) expression -> MINUS . expression
     (3) expression -> . expression PLUS expression
@@ -131,16 +149,18 @@ state 6
     (7) expression -> . MINUS expression
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . NUMBER
-    (10) expression -> . NAME
+    (10) expression -> . FLOAT
+    (11) expression -> . NAME
 
-    MINUS           shift and go to state 6
-    LPAREN          shift and go to state 4
+    MINUS           shift and go to state 7
+    LPAREN          shift and go to state 5
     NUMBER          shift and go to state 2
-    NAME            shift and go to state 9
+    FLOAT           shift and go to state 3
+    NAME            shift and go to state 10
 
-    expression                     shift and go to state 14
+    expression                     shift and go to state 15
 
-state 7
+state 8
 
     (1) statement -> NAME EQUALS . expression
     (3) expression -> . expression PLUS expression
@@ -150,16 +170,18 @@ state 7
     (7) expression -> . MINUS expression
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . NUMBER
-    (10) expression -> . NAME
+    (10) expression -> . FLOAT
+    (11) expression -> . NAME
 
-    MINUS           shift and go to state 6
-    LPAREN          shift and go to state 4
+    MINUS           shift and go to state 7
+    LPAREN          shift and go to state 5
     NUMBER          shift and go to state 2
-    NAME            shift and go to state 9
+    FLOAT           shift and go to state 3
+    NAME            shift and go to state 10
 
-    expression                     shift and go to state 15
+    expression                     shift and go to state 16
 
-state 8
+state 9
 
     (8) expression -> LPAREN expression . RPAREN
     (3) expression -> expression . PLUS expression
@@ -167,26 +189,26 @@ state 8
     (5) expression -> expression . TIMES expression
     (6) expression -> expression . DIVIDE expression
 
-    RPAREN          shift and go to state 16
-    PLUS            shift and go to state 10
-    MINUS           shift and go to state 12
-    TIMES           shift and go to state 13
-    DIVIDE          shift and go to state 11
-
-
-state 9
-
-    (10) expression -> NAME .
-
-    RPAREN          reduce using rule 10 (expression -> NAME .)
-    PLUS            reduce using rule 10 (expression -> NAME .)
-    MINUS           reduce using rule 10 (expression -> NAME .)
-    TIMES           reduce using rule 10 (expression -> NAME .)
-    DIVIDE          reduce using rule 10 (expression -> NAME .)
-    $end            reduce using rule 10 (expression -> NAME .)
+    RPAREN          shift and go to state 17
+    PLUS            shift and go to state 11
+    MINUS           shift and go to state 13
+    TIMES           shift and go to state 14
+    DIVIDE          shift and go to state 12
 
 
 state 10
+
+    (11) expression -> NAME .
+
+    PLUS            reduce using rule 11 (expression -> NAME .)
+    MINUS           reduce using rule 11 (expression -> NAME .)
+    TIMES           reduce using rule 11 (expression -> NAME .)
+    DIVIDE          reduce using rule 11 (expression -> NAME .)
+    $end            reduce using rule 11 (expression -> NAME .)
+    RPAREN          reduce using rule 11 (expression -> NAME .)
+
+
+state 11
 
     (3) expression -> expression PLUS . expression
     (3) expression -> . expression PLUS expression
@@ -196,16 +218,18 @@ state 10
     (7) expression -> . MINUS expression
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . NUMBER
-    (10) expression -> . NAME
+    (10) expression -> . FLOAT
+    (11) expression -> . NAME
 
-    MINUS           shift and go to state 6
-    LPAREN          shift and go to state 4
+    MINUS           shift and go to state 7
+    LPAREN          shift and go to state 5
     NUMBER          shift and go to state 2
-    NAME            shift and go to state 9
+    FLOAT           shift and go to state 3
+    NAME            shift and go to state 10
 
-    expression                     shift and go to state 17
+    expression                     shift and go to state 18
 
-state 11
+state 12
 
     (6) expression -> expression DIVIDE . expression
     (3) expression -> . expression PLUS expression
@@ -215,16 +239,18 @@ state 11
     (7) expression -> . MINUS expression
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . NUMBER
-    (10) expression -> . NAME
+    (10) expression -> . FLOAT
+    (11) expression -> . NAME
 
-    MINUS           shift and go to state 6
-    LPAREN          shift and go to state 4
+    MINUS           shift and go to state 7
+    LPAREN          shift and go to state 5
     NUMBER          shift and go to state 2
-    NAME            shift and go to state 9
+    FLOAT           shift and go to state 3
+    NAME            shift and go to state 10
 
-    expression                     shift and go to state 18
+    expression                     shift and go to state 19
 
-state 12
+state 13
 
     (4) expression -> expression MINUS . expression
     (3) expression -> . expression PLUS expression
@@ -234,16 +260,18 @@ state 12
     (7) expression -> . MINUS expression
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . NUMBER
-    (10) expression -> . NAME
+    (10) expression -> . FLOAT
+    (11) expression -> . NAME
 
-    MINUS           shift and go to state 6
-    LPAREN          shift and go to state 4
+    MINUS           shift and go to state 7
+    LPAREN          shift and go to state 5
     NUMBER          shift and go to state 2
-    NAME            shift and go to state 9
+    FLOAT           shift and go to state 3
+    NAME            shift and go to state 10
 
-    expression                     shift and go to state 19
+    expression                     shift and go to state 20
 
-state 13
+state 14
 
     (5) expression -> expression TIMES . expression
     (3) expression -> . expression PLUS expression
@@ -253,16 +281,18 @@ state 13
     (7) expression -> . MINUS expression
     (8) expression -> . LPAREN expression RPAREN
     (9) expression -> . NUMBER
-    (10) expression -> . NAME
+    (10) expression -> . FLOAT
+    (11) expression -> . NAME
 
-    MINUS           shift and go to state 6
-    LPAREN          shift and go to state 4
+    MINUS           shift and go to state 7
+    LPAREN          shift and go to state 5
     NUMBER          shift and go to state 2
-    NAME            shift and go to state 9
+    FLOAT           shift and go to state 3
+    NAME            shift and go to state 10
 
-    expression                     shift and go to state 20
+    expression                     shift and go to state 21
 
-state 14
+state 15
 
     (7) expression -> MINUS expression .
     (3) expression -> expression . PLUS expression
@@ -270,20 +300,20 @@ state 14
     (5) expression -> expression . TIMES expression
     (6) expression -> expression . DIVIDE expression
 
-    RPAREN          reduce using rule 7 (expression -> MINUS expression .)
     PLUS            reduce using rule 7 (expression -> MINUS expression .)
     MINUS           reduce using rule 7 (expression -> MINUS expression .)
     TIMES           reduce using rule 7 (expression -> MINUS expression .)
     DIVIDE          reduce using rule 7 (expression -> MINUS expression .)
     $end            reduce using rule 7 (expression -> MINUS expression .)
+    RPAREN          reduce using rule 7 (expression -> MINUS expression .)
 
-  ! PLUS            [ shift and go to state 10 ]
-  ! MINUS           [ shift and go to state 12 ]
-  ! TIMES           [ shift and go to state 13 ]
-  ! DIVIDE          [ shift and go to state 11 ]
+  ! PLUS            [ shift and go to state 11 ]
+  ! MINUS           [ shift and go to state 13 ]
+  ! TIMES           [ shift and go to state 14 ]
+  ! DIVIDE          [ shift and go to state 12 ]
 
 
-state 15
+state 16
 
     (1) statement -> NAME EQUALS expression .
     (3) expression -> expression . PLUS expression
@@ -292,25 +322,25 @@ state 15
     (6) expression -> expression . DIVIDE expression
 
     $end            reduce using rule 1 (statement -> NAME EQUALS expression .)
-    PLUS            shift and go to state 10
-    MINUS           shift and go to state 12
-    TIMES           shift and go to state 13
-    DIVIDE          shift and go to state 11
+    PLUS            shift and go to state 11
+    MINUS           shift and go to state 13
+    TIMES           shift and go to state 14
+    DIVIDE          shift and go to state 12
 
 
-state 16
+state 17
 
     (8) expression -> LPAREN expression RPAREN .
 
-    RPAREN          reduce using rule 8 (expression -> LPAREN expression RPAREN .)
     PLUS            reduce using rule 8 (expression -> LPAREN expression RPAREN .)
     MINUS           reduce using rule 8 (expression -> LPAREN expression RPAREN .)
     TIMES           reduce using rule 8 (expression -> LPAREN expression RPAREN .)
     DIVIDE          reduce using rule 8 (expression -> LPAREN expression RPAREN .)
     $end            reduce using rule 8 (expression -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 8 (expression -> LPAREN expression RPAREN .)
 
 
-state 17
+state 18
 
     (3) expression -> expression PLUS expression .
     (3) expression -> expression . PLUS expression
@@ -318,20 +348,20 @@ state 17
     (5) expression -> expression . TIMES expression
     (6) expression -> expression . DIVIDE expression
 
-    RPAREN          reduce using rule 3 (expression -> expression PLUS expression .)
     PLUS            reduce using rule 3 (expression -> expression PLUS expression .)
     MINUS           reduce using rule 3 (expression -> expression PLUS expression .)
     $end            reduce using rule 3 (expression -> expression PLUS expression .)
-    TIMES           shift and go to state 13
-    DIVIDE          shift and go to state 11
+    RPAREN          reduce using rule 3 (expression -> expression PLUS expression .)
+    TIMES           shift and go to state 14
+    DIVIDE          shift and go to state 12
 
   ! TIMES           [ reduce using rule 3 (expression -> expression PLUS expression .) ]
   ! DIVIDE          [ reduce using rule 3 (expression -> expression PLUS expression .) ]
-  ! PLUS            [ shift and go to state 10 ]
-  ! MINUS           [ shift and go to state 12 ]
+  ! PLUS            [ shift and go to state 11 ]
+  ! MINUS           [ shift and go to state 13 ]
 
 
-state 18
+state 19
 
     (6) expression -> expression DIVIDE expression .
     (3) expression -> expression . PLUS expression
@@ -339,20 +369,20 @@ state 18
     (5) expression -> expression . TIMES expression
     (6) expression -> expression . DIVIDE expression
 
-    RPAREN          reduce using rule 6 (expression -> expression DIVIDE expression .)
     PLUS            reduce using rule 6 (expression -> expression DIVIDE expression .)
     MINUS           reduce using rule 6 (expression -> expression DIVIDE expression .)
     TIMES           reduce using rule 6 (expression -> expression DIVIDE expression .)
     DIVIDE          reduce using rule 6 (expression -> expression DIVIDE expression .)
     $end            reduce using rule 6 (expression -> expression DIVIDE expression .)
+    RPAREN          reduce using rule 6 (expression -> expression DIVIDE expression .)
 
-  ! PLUS            [ shift and go to state 10 ]
-  ! MINUS           [ shift and go to state 12 ]
-  ! TIMES           [ shift and go to state 13 ]
-  ! DIVIDE          [ shift and go to state 11 ]
+  ! PLUS            [ shift and go to state 11 ]
+  ! MINUS           [ shift and go to state 13 ]
+  ! TIMES           [ shift and go to state 14 ]
+  ! DIVIDE          [ shift and go to state 12 ]
 
 
-state 19
+state 20
 
     (4) expression -> expression MINUS expression .
     (3) expression -> expression . PLUS expression
@@ -360,20 +390,20 @@ state 19
     (5) expression -> expression . TIMES expression
     (6) expression -> expression . DIVIDE expression
 
-    RPAREN          reduce using rule 4 (expression -> expression MINUS expression .)
     PLUS            reduce using rule 4 (expression -> expression MINUS expression .)
     MINUS           reduce using rule 4 (expression -> expression MINUS expression .)
     $end            reduce using rule 4 (expression -> expression MINUS expression .)
-    TIMES           shift and go to state 13
-    DIVIDE          shift and go to state 11
+    RPAREN          reduce using rule 4 (expression -> expression MINUS expression .)
+    TIMES           shift and go to state 14
+    DIVIDE          shift and go to state 12
 
   ! TIMES           [ reduce using rule 4 (expression -> expression MINUS expression .) ]
   ! DIVIDE          [ reduce using rule 4 (expression -> expression MINUS expression .) ]
-  ! PLUS            [ shift and go to state 10 ]
-  ! MINUS           [ shift and go to state 12 ]
+  ! PLUS            [ shift and go to state 11 ]
+  ! MINUS           [ shift and go to state 13 ]
 
 
-state 20
+state 21
 
     (5) expression -> expression TIMES expression .
     (3) expression -> expression . PLUS expression
@@ -381,15 +411,15 @@ state 20
     (5) expression -> expression . TIMES expression
     (6) expression -> expression . DIVIDE expression
 
-    RPAREN          reduce using rule 5 (expression -> expression TIMES expression .)
     PLUS            reduce using rule 5 (expression -> expression TIMES expression .)
     MINUS           reduce using rule 5 (expression -> expression TIMES expression .)
     TIMES           reduce using rule 5 (expression -> expression TIMES expression .)
     DIVIDE          reduce using rule 5 (expression -> expression TIMES expression .)
     $end            reduce using rule 5 (expression -> expression TIMES expression .)
+    RPAREN          reduce using rule 5 (expression -> expression TIMES expression .)
 
-  ! PLUS            [ shift and go to state 10 ]
-  ! MINUS           [ shift and go to state 12 ]
-  ! TIMES           [ shift and go to state 13 ]
-  ! DIVIDE          [ shift and go to state 11 ]
+  ! PLUS            [ shift and go to state 11 ]
+  ! MINUS           [ shift and go to state 13 ]
+  ! TIMES           [ shift and go to state 14 ]
+  ! DIVIDE          [ shift and go to state 12 ]
 

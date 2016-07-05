@@ -1,9 +1,9 @@
 class Symbol:
-    def __init__(self, name, type, kind):
+    def __init__(self, name, type, kind, constant):
         self.name = name
         self.type = type
         self.kind = kind # kind = function, var, or parameter
-
+        self.is_constant = constant
 #--------------------------------
 #This is a stack of scopes, 
 #the stack is implemented as a list
@@ -24,6 +24,8 @@ class SymbolTable:
         self.symbols.append([])
         self.scope += 1
 
+    #look for symbol x in all currently
+    #available scopes
     def find_symbol(self, x):
         for scope_symbols in reversed(self.symbols):            
             for symbol in scope_symbols:
@@ -34,6 +36,8 @@ class SymbolTable:
     def add_symbol(self, x):
         self.symbols[self.scope].append(x)
 
+    #look for symbol x in current scope
+    #returns true if it's found, false otherwise
     def check_scope(self, x):
         for symbol in self.symbols[self.scope]:
             if symbol.name == x:

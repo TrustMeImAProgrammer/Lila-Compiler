@@ -1,6 +1,5 @@
 import yacc
 from tokenizer import tokens
-import ast
 
 precedence = (
          ('left', 'OR'),
@@ -8,7 +7,8 @@ precedence = (
          ('left', 'EQUALS'),
          ('left', 'GT', 'GE', 'LT', 'LE'),
          ('left', 'PLUS', 'MINUS'),
-         ('left', 'TIMES', 'DIVIDE', 'MODULO')
+         ('left', 'TIMES', 'DIVIDE', 'MODULO'),
+    	 ('right', 'UMINUS')
      )
 
 def p_program(p):
@@ -45,23 +45,36 @@ def p_statement_block(p):
     """
     p[0] = p[1]
 
+#-------------
+# Assignments
+#-------------
+
+
 def p_assignment(p):
     'assignment : ID EQUALS expression'
-    p[0] = {'type': 'assignment', 'children': [p[1], p[3]]}
+    p[0] = {'type': 'assignment', 'var_type': None, 'children': [p[1], p[3]], 'lineno': p.lineno(1)}
 
 #for now its not possible to just declare without assignment
 def p_decl_assignment(p):
     """assignment : type_info ID EQUALS expression
+		  | CONST type_info ID EQUALS value
     """
-    p[0] = {'type':'var_declaration', 'type': p[1], 'children': [p[2], p[4]]}
+    if len(p) == 5:
+        p[0] = {'type':'assignment', 'var_type': p[1], 'constant': False, 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
+    else:
+    p[0] = {'type':'assignment', 'var_type': p[1], 'constant': True, 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
 
 def p_assignment_increment(p):
     'assignment : ID PLUSPLUS'
-    p[0] = {'type': 'plus_plus', 'children': [p[1]]}
+    p[0] = {'type': 'plus_plus', 'children': [p[1]], 'lineno': p.lineno(1)}
 
 def p_assignment_decrement(p):
     'assignment : ID MINUSMINUS'
-    p[0] = {'type': 'minus_minus', 'children': [p[1]]}
+    p[0] = {'type': 'minus_minus', 'children': [p[1]], 'lineno': p.lineno(1)}
+
+#------------
+# Functions
+#------------
 
 def p_func_call(p):
     """func_call : 	CALL identifier LPAREN arguments_list RPAREN
@@ -70,45 +83,55 @@ def p_func_call(p):
         p[0] = {'type': 'func_call', 'name': p[2], 'children': [p[4]]}
     else:
         p[0] = {'type': 'func_call', 'name': p[2], 'children': []}
-
-def p_return_statement(p):
-    'return_statement : RETURN expression'
-    p[0] = {'type': 'return', 'children': [p[2]]}
+    p[0]['lineno'] = p.lineno(1)
 
 #nested function declarations are not allowed, unlike gcc an error will be thrown,
 #this must be done during tree traversal
 def p_func_declaration(p):
-    """func_declaration :	FUNCTION ID LPAREN params_list RPAREN LBRACKET translation_unit RBRACKET
-    			|	FUNCTION ID LPAREN RPAREN LBRACKET translation_unit RBRACKET
+    """func_declaration : 	FUNCTION ID LPAREN params_list RPAREN COLON RETURNS type_info LBRACKET translation_unit RBRACKET
+    			|	FUNCTION ID LPAREN RPAREN COLON RETURNS type_info LBRACKET translation_unit RBRACKET
     """
-    if len(p) == 9:
-        p[0] = {'type': 'func_declaration', 'name':p[2], 'parameters':p[4], 'children': [p[7]]}
+    if len(p) == 12:
+        p[0] = {'type': 'func_declaration', 'name':p[2], 'parameters':p[4], 'func_type':p[8], 'children': [p[10]]}
     else:
-        p[0] = {'type': 'func_declaration', 'name': p[2], 'parameters': None, 'children': [p[6]]}
+        p[0] = {'type': 'func_declaration', 'name': p[2], 'parameters': None, 'func_type': p[7], 'children': [p[9]]}
+    p[0]['lineno'] = p.lineno(1)
+
+def p_return_statement(p):
+    'return_statement : RETURN expression'
+    p[0] = {'type': 'return', 'children': [p[2]], 'lineno': p.lineno(2)}
+
+
+#---------------------
+# Language constructs
+#----------------------
 
 #need to check if the binary op returns a boolean
 def p_if_statement(p):
     'if_statement : IF binary_op LBRACKET translation_unit RBRACKET'
-    p[0] = {'type': 'if_statement', 'else_block': None, 'children': [p[2], p[4]]}
+    p[0] = {'type': 'if_statement', 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
 
-def p_if_else_statement(p):
-    'if_statement : IF binary_op LBRACKET translation_unit RBRACKET ELSE LBRACKET translation_unit RBRACKET'
-    p[0] = {'type': 'if_statement', 'else_block': p[8], 'children': [p[2], p[4]]}
+# def p_if_else_statement(p):
+#     'if_statement : IF binary_op LBRACKET translation_unit RBRACKET ELSE LBRACKET translation_unit RBRACKET'
+#     p[0] = {'type': 'if_statement', 'else_block': p[8], 'children': [p[2], p[4]]}
 
+def p_else_statement(p):
+    'else_statement : ELSE LBRACKET translation_unit RBRACKET'
+    p[0] = {'type': 'else_statement', 'children': [p[3]], 'lineno': p.lineno(1)}
 def p_while_statement(p):
     'while_statement : WHILE binary_op LBRACKET translation_unit RBRACKET'
-    p[0] = {'type': 'while_statement', 'children': [p[2], p[4]]}
+    p[0] = {'type': 'while_statement', 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
 
 def p_for_statement(p):
     """for_statement :	FOR ID IN ID
     		     |	FOR ID IN func_call
     """
-    p[0] = {'type': 'for_statement', 'children': [p[2], p[4]]}
+    p[0] = {'type': 'for_statement', 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
+
 
 #-----------
 # Lists
 #-----------
-
 
 def p_params_list(p):
     """params_list :	parameter_declaration
@@ -153,16 +176,16 @@ def p_simple_expression(p):
  ## Atomic expressions
 def p_atom_expression_(p):
     """atom :	identifier
-    	    |	constant
+    	    |	value
     """
     p[0] = p[1]
 
 def p_identifier(p):
     'identifier : ID'
-    p[0] = p[1]
+    p[0] = {'type': 'ID', 'name': p[1], 'lineno': p.lineno(1)}
 
-def p_constant(p):
-    """constant :	NUMBER
+def p_value(p):
+    """value 	:	NUMBER
 		|	SLITERAL
     		|	FLOAT
 		|	TRUE
@@ -173,59 +196,59 @@ def p_constant(p):
 ## Boolean expressions
 def p_binary_op_and(p):
     'binary_op : expression AND expression'
-    p[0] = {'type': 'and', 'children': [p[1], p[3]]}
+    p[0] = {'type': 'and', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_or(p):
     'binary_op : expression OR expression'
-    p[0] = {'type': 'or', 'children': [p[1], p[3]]}
+    p[0] = {'type': 'or', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_gt(p):
     'binary_op : expression GT expression'
-    p[0] = {'type': '>', 'children': [p[1], p[3]]}
+    p[0] = {'type': '>', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_lt(p):
     'binary_op : expression LT expression'
-    p[0] = {'type': '<', 'children': [p[1], p[3]]}
+    p[0] = {'type': '<', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_ge(p):
     'binary_op : expression GE expression'
-    p[0] = {'type': '>=', 'children': [p[1], p[3]]}
+    p[0] = {'type': '>=', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_le(p):
     'binary_op : expression LE expression'
-    p[0] = {'type': '<=', 'children': [p[1], p[3]]}
+    p[0] = {'type': '<=', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_equals(p):
     'binary_op : expression ISEQUALS expression'
-    p[0] = {'type': 'isequals', 'children': [p[1], p[3]]}
+    p[0] = {'type': 'isequals', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
     
 ## Numeric expressions
 
 def p_binary_op_mod(p):
     'binary_op : expression MODULO expression'
-    p[0] = {'type:' '%', 'children': [p[1], p[3]]}
+    p[0] = {'type': 'modulo', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_plus(p):
     'binary_op : expression PLUS expression'
-    p[0] = {'type': '+', 'children': [p[1], p[3]]}
+    p[0] = {'type': '+', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_minus(p):
     'binary_op : expression MINUS expression'
-    p[0] = {'type': '-', 'children': [p[1], p[3]]}
+    p[0] = {'type': '-', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_times(p):
     'binary_op : expression TIMES expression'
-    p[0] = {'type': '*', 'children': [p[1], p[3]]}
+    p[0] = {'type': '*', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 def p_binary_op_divide(p):
     'binary_op : expression DIVIDE expression'
-    p[0] = {'type': '/', 'children': [p[1], p[3]]}
+    p[0] = {'type': '/', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
 
 ######
 
 def p_unary_op_minus(p):
-    'unary_op : MINUS expression'
-    p[0] = -p[1]
+    'unary_op : MINUS expression %prec UMINUS'
+    p[0] = {'type': 'uminus', 'children': [p[2]], 'lineno': p.lineno(1)}
 
 # def p_unary_op_plus(p):
 #     'unary_op : PLUS expression'
@@ -233,7 +256,7 @@ def p_unary_op_minus(p):
 
 def p_unary_op_not(p):
     'unary_op : NOT expression'
-    p[0] = {'type': 'not', 'children': [p[2]]}
+    p[0] = {'type': 'not', 'children': [p[2]], 'lineno': p.lineno(1)}
 
 def p_type_info(p):
     """type_info : INT

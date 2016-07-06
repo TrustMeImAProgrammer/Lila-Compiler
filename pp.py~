@@ -1,7 +1,7 @@
 import parser
 import lex
 
-source_code = open("example.lila", 'r').read()
+source_code = open("data.txt", 'r').read()
 ast = parser.parse(source_code)
 
 def pretty_print(node):

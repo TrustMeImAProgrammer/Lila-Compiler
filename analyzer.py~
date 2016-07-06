@@ -18,8 +18,7 @@ def analyze_translation_unit(node):
         analyze(child)
 
 def analyze_assignment(node):
-    id = node['children'][0]['children'][0]
-    print "expression id = {0} at line {1}".format(id, node['lineno'])
+    id = node['children'][0]
     expression = node['children'][1]
     if(node['var_type']): 
         #this is a declaration and assignment
@@ -30,17 +29,16 @@ def analyze_assignment(node):
             sys.exit()
         #check type of expression
         type = type_check(expression)
-        print "got type {0}".format(type)
         if type == node['var_type']:
             #Add symbol to symbol table
-            symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False))
+            symboltable.add_symbol(symbol_table.Symbol(id, node['type'], 'var', True if node['constant'] else False))
         else:
-            print "Error at line {0}: variable type and expression type don't coincide".format(node['lineno'])
+            print "Error at line {0}: variable type and expression type don't coincide"
             sys.exit()
     else:
         #this is a simple reassignment of an existing variable
         #check if the variable has been declared
-        symbol = symboltable.find_symbol(id)
+        symbol = find_symbol(id)
         if not symbol:
             print "Error at line {0}: variable {1} does not exist".format(node['lineno'], id)
             sys.exit()
@@ -62,18 +60,17 @@ def analyze_shorthand_assignment(node):
         print "Error at line {0}: cannot perform assignment to {1}, lvalue required".format(node['lineno'], id)
         sys.exit()
     #next, check if the variable is a constant
-    if symbol.is_constant:
+    if symbol.constant:
         print "Error at line {0}: cannot modify value of {1}, because it's a constan".format(node['lineno'], id)
         sys.exit()
     #now check if plusplus or minus_minusis a valid operation on this type of variable
-    print symbol.type
     if symbol.type != 'integer' and symbol.type != 'real':
         print "Error at line {0}: cannot petform operation on variable of type {1}".format(node['lineno'], symbol.type)
         sys.exit()    
 
 def analyze_func_call(node):
     #check that the function has been declared
-    id = node['children'][0]['children'][0]
+    id = node['children'][0]
     print "func call id = {0}".format(id)
     symbol = symboltable.find_symbol(id)
     if not symbol:
@@ -95,8 +92,8 @@ def analyze_func_call(node):
 
 def analyze_function_declaration(node):
     #check the function hasn't been declared already
-    id = node['children'][0]['children'][0]
-    print "func declaration id = {0}".format(id)
+    id = node['children'][0]
+    print "function declaration, id = {0}".format(id)
     if symboltable.check_scope(id):
         print "Error at line {0}: function {1} already defined".format(node['lineno'], id)
         sys.exit()
@@ -109,11 +106,11 @@ def type_check(node):
     if not isinstance(node, dict): #if node is not a dictionary then it's an explicit value
         return convert_types(type(node).__name__)
     if node['type'] == 'ID' or node['type'] == 'func_call':
-        id = node['children'][0] if node['type'] == 'ID' else node['children'][0]['children'][0]
+        id = node['children'][0]
         print "func call id = {0}".format(id)
-        symbol = symboltable.find_symbol(id)
-        if symbol:
-            return symbol.type
+        type = symboltable.find_symbol(id)
+        if type:
+            return type
         else:
             obj = 'variable' if node['type'] == 'ID' else 'function'
             print "Error at line {0}: use of undefined {1} {2}".format(node['lineno'], obj, id)

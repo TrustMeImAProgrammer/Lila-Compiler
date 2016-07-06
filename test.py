@@ -1,15 +1,4 @@
-class Node(object):
-    def __init__(self, name, children):
-        self.name = name
-        if children:
-            self.children = children
-        else:
-            self.children = [ ]
-    def show(self):
-        pass
+params = ['a', 'b', 'c']
 
-class ProgramNode(Node):
-    pass
-x = ProgramNode("carlos", [])
-print x.name
-print x.children
+for i, param in enumerate(params):
+    print "param {0} at index {1}".format(param, i)

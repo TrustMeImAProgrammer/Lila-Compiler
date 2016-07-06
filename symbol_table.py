@@ -1,9 +1,11 @@
 class Symbol:
-    def __init__(self, name, type, kind, constant):
+    def __init__(self, name, type, kind, constant, params = None):
         self.name = name
         self.type = type
         self.kind = kind # kind = function, var, or parameter
         self.is_constant = constant
+        if params:
+            self.params = params
 #--------------------------------
 #This is a stack of scopes, 
 #the stack is implemented as a list

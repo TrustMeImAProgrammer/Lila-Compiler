@@ -9,8 +9,14 @@ void check(int depth) {
     check(depth-1);
 }
 
+int func(){
+	return 1;
+}
 int main() {
-	int x = 5.3f;
-    check(10);
+	double x = 5.3;
+//    check(10);
+	printf ("%f\n", x);
+	x++;
+	printf ("%f\n", x);
     return 0;
 }

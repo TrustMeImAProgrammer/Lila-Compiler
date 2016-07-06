@@ -51,16 +51,16 @@ def p_statement_block(p):
 
 
 def p_assignment(p):
-    'assignment : identifier EQUALS expression'
-    p[0] = {'type': 'assignment', 'var_type': None, 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
+    'assignment : ID EQUALS expression'
+    p[0] = {'type': 'assignment', 'var_type': None, 'children': [p[1], p[3]], 'lineno': p.lineno(1)}
 
 #for now its not possible to just declare without assignment
 def p_decl_assignment(p):
-    """assignment : type_info identifier EQUALS expression
-		  | CONST type_info identifier EQUALS value
+    """assignment : type_info ID EQUALS expression
+		  | CONST type_info ID EQUALS value
     """
     if len(p) == 5:
-        p[0] = {'type':'assignment', 'var_type': p[1], 'constant': False, 'children': [p[2], p[4]], 'lineno': p.lineno(2)}
+        p[0] = {'type':'assignment', 'var_type': p[1], 'constant': False, 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
     else:
         p[0] = {'type':'assignment', 'var_type': p[1], 'constant': True, 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
 
@@ -77,8 +77,8 @@ def p_assignment_decrement(p):
 #------------
 
 def p_func_call(p):
-    """func_call : 	CALL identifier LPAREN arguments_list RPAREN
-    		 |	CALL identifier LPAREN RPAREN"""
+    """func_call : 	CALL ID LPAREN arguments_list RPAREN
+    		 |	CALL ID LPAREN RPAREN"""
     if len(p) == 6:
         p[0] = {'type': 'func_call', 'children': [p[2], p[4]]}
     else:
@@ -88,8 +88,8 @@ def p_func_call(p):
 #nested function declarations are not allowed, unlike gcc an error will be thrown,
 #this must be done during tree traversal
 def p_func_declaration(p):
-    """func_declaration : 	FUNCTION identifier LPAREN params_list RPAREN COLON RETURNS type_info LBRACKET translation_unit RBRACKET
-    			|	FUNCTION identifier LPAREN RPAREN COLON RETURNS type_info LBRACKET translation_unit RBRACKET
+    """func_declaration : 	FUNCTION ID LPAREN params_list RPAREN COLON RETURNS type_info LBRACKET translation_unit RBRACKET
+    			|	FUNCTION ID LPAREN RPAREN COLON RETURNS type_info LBRACKET translation_unit RBRACKET
     """
     if len(p) == 12:
         p[0] = {'type': 'func_declaration', 'parameters':p[4], 'func_type':p[8], 'children': [p[2], p[10]]}
@@ -144,7 +144,7 @@ def p_params_list(p):
         p[0] = p[1]
 
 def p_parameter_declaration(p):
-    'parameter_declaration : type_info identifier'
+    'parameter_declaration : type_info ID'
     p[0] = {'type': 'param_decl', 'children': [p[1], p[2]]}
 
 def p_arguments_list(p):

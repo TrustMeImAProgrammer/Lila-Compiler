@@ -1,0 +1,11 @@
+function square(integer x):returns integer{
+		 return x*x
+}
+
+integer x = call square(2)
+
+if x < 0 {
+   call print('error')
+}
+x++
+y = x

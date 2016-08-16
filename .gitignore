@@ -1,0 +1,11 @@
+*.pyc
+*.out
+*~
+*#
+.#*
+data.lila
+data.txt
+example.lila
+test.c
+test.py
+abgabedatum.txt

@@ -20,3 +20,20 @@ int main() {
 	printf ("%f\n", x);
     return 0;
 }
+
+int t{
+	return 4;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

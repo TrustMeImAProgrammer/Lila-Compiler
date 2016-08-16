@@ -88,14 +88,19 @@ def p_func_call(p):
 #nested function declarations are not allowed, unlike gcc an error will be thrown,
 #this must be done during tree traversal
 def p_func_declaration(p):
-    """func_declaration : 	FUNCTION identifier LPAREN params_list RPAREN COLON RETURNS type_info LBRACKET translation_unit RBRACKET
-    			|	FUNCTION identifier LPAREN RPAREN COLON RETURNS type_info LBRACKET translation_unit RBRACKET
+    """func_declaration : 	FUNCTION identifier LPAREN params_list RPAREN COLON RETURNS return_type LBRACKET translation_unit RBRACKET
+    			|	FUNCTION identifier LPAREN RPAREN COLON RETURNS return_type LBRACKET translation_unit RBRACKET
     """
     if len(p) == 12:
         p[0] = {'type': 'func_declaration', 'parameters':p[4], 'func_type':p[8], 'children': [p[2], p[10]]}
     else:
         p[0] = {'type': 'func_declaration', 'parameters': None, 'func_type': p[7], 'children': [p[2], p[9]]}
     p[0]['lineno'] = p.lineno(1)
+
+def p_return_type(p):
+    """return_type 	: type_info
+			| VOID"""
+    p[0] = p[1]
 
 def p_return_statement(p):
     'return_statement : RETURN expression'
@@ -273,7 +278,7 @@ def p_error(p):
 
 def parse(source):
     par = yacc.yacc()
-    return par.parse(source)
+    return par.parse(source, debug=1)
 
 if __name__ == "__main__":
     parser = yacc.yacc()

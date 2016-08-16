@@ -22,7 +22,8 @@ reserved = {
     'function' : 'FUNCTION',
     'for' : 'FOR',
     'in' : 'IN',
-    'constant' : 'CONST'
+    'constant' : 'CONST',
+    'void' : 'VOID'
 }
 tokens = ["COLON", "SLITERAL", "CHARLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
           "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", "EQUALS", 

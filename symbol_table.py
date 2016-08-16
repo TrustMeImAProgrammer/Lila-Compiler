@@ -4,8 +4,7 @@ class Symbol:
         self.type = type
         self.kind = kind # kind = function, var, or parameter
         self.is_constant = constant
-        if params:
-            self.params = params
+        self.params = params
 #--------------------------------
 #This is a stack of scopes, 
 #the stack is implemented as a list

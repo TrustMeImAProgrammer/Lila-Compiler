@@ -1,17 +1,9 @@
-function square(integer x):returns integer{
-		 return x*x
-}
-
-integer x = call square(2)
-
-if x < 0 {
-   call print('error')
-}
-x++
+integer i = 7
 function faculty(integer n):returns integer{
 		 if n <= 0 {
 		 	return 1
 		 }
 		 return n*call faculty(n-1)
 }
-call print(call faculty(4))
+integer mine = 4 + call faculty(i)
+integer y = mine + i * call faculty(4)

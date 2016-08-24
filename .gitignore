@@ -1,11 +1,11 @@
 *.pyc
 *.out
+*.o
 *~
 *#
 .#*
-data.lila
-data.txt
-example.lila
-test.c
+*.lila
+*.asm
 test.py
 abgabedatum.txt
+.idea

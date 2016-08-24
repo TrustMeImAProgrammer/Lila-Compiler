@@ -1,5 +1,4 @@
 import sys
-import symbol_table
 import parser
 import analyzer
 import codegen
@@ -12,7 +11,9 @@ ast = parser.parse(source_code)
 analyzer.analyze(ast)
 print "Analyzed all lines successfully"
 
-# code = codegen.generate(ast)
-# output = sys.argv[1].split('.')[0]
-# outfile = open(output, 'w')
+code = codegen.generate(ast)
+output = sys.argv[1].split('.')[0] + ".asm"
+outfile = open(output, 'w')
+outfile.write(code)
+outfile.close()
 

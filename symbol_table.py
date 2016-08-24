@@ -1,5 +1,5 @@
 class Symbol:
-    def __init__(self, name, type, kind = 'var', constant = False, params = None, offset = None, strlen = None):
+    def __init__(self, name, type, kind = 'var', constant = False, params = None, offset = 0, strlen = None):
         self.name = name
         self.type = type
         self.kind = kind # kind = function, var, or parameter
@@ -14,59 +14,55 @@ class Symbol:
 #each list contains all symbols in a scope
 #--------------------------------
 class SymbolTable:
+    #symbols must be an array containing existing symbols in the first scope
     def __init__(self, symbols = None):
-        #by default there's just one scope with no symbols
-        self.scope = 0
-        self.symbols = [] #symbols is an array of arrays, each array is the symbols in a scope
+        self.scopes = [] #scopes is an array of arrays, containing all scopes
         if symbols:
-            self.symbols.append(symbols)
+            self.scopes.append(symbols)
         else:
-            self.symbols.append([]) 
+            #append an empty scope
+            self.scopes.append([])
 
     def enter_scope(self):
-        self.symbols.append([])
-        self.scope += 1
+        self.scopes.append([])
 
     #look for symbol x in all currently
     #available scopes
     def find_symbol(self, x):
-        for scope_symbols in reversed(self.symbols):            
+        for scope_symbols in reversed(self.scopes):
             for symbol in scope_symbols:
                 if symbol.name == x:
                     return symbol
         return None
 
     def add_symbol(self, x):
-        self.symbols[self.scope].append(x)
+        self.scopes[len(self.scopes) - 1].append(x)
 
     #look for symbol x in current scope
     #returns true if it's found, false otherwise
     def check_scope(self, x):
-        for symbol in self.symbols[self.scope]:
+        for symbol in self.scopes[len(self.scopes) - 1]:
             if symbol.name == x:
                 return True
         return False
 
     def exit_scope(self):
-        self.symbols.pop()
-        self.scope -= 1
-
-    def count_scopes(self):
-        return self.scope
+        self.scopes.pop()
 
 
-st = SymbolTable()
-x = Symbol("x", "int")
-y = Symbol("y", "bool")
-st.add_symbol(x)
-st.add_symbol(y)
-print st.check_scope("x")
-st.enter_scope()
-yy = Symbol("y", "float")
-st.add_symbol(yy)
-result = st.find_symbol("y")
-if result:
-    print result.name
-    print result.type
+# st = SymbolTable()
+# x = Symbol("x", "int")
+# y = Symbol("y", "bool")
+# st.add_symbol(x)
+# st.add_symbol(y)
+# print st.check_scope("x")
+# st.enter_scope()
+# yy = Symbol("y", "float")
+# st.add_symbol(yy)
+# result = st.find_symbol("y")
+# if result:
+#     print result.name
+#     print result.type
+#
+# print "size of symbols = " + str(len(st.scopes))
 
-print "size of symbols = " + str(len(st.symbols))

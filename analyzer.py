@@ -2,8 +2,10 @@ import symbol_table
 import sys
 
 symboltable = symbol_table.SymbolTable()
-#add built-in names and functions to the symbol table
-symboltable.add_symbol(symbol_table.Symbol('print', None, 'function', False, -1)) #-1 is used by the print function to accept a variable number of arguments
+# add built-in names and functions to the symbol table
+# -1 is used by the print function to accept a variable number of arguments
+symboltable.add_symbol(symbol_table.Symbol('print', None, 'function', False, -1))
+symboltable.add_symbol((symbol_table.Symbol('str', 'string', 'function', False, 1)))
 
 def analyze(node):
     print "got node of type: {0}".format(node['type'])
@@ -11,7 +13,7 @@ def analyze(node):
     if node['type'] == 'assignment':		return analyze_assignment(node)
     if node['type'] == 'plus_plus': 		return analyze_shorthand_assignment(node)
     if node['type'] == 'minus_minus': 		return analyze_shorthand_assignment(node)
-    if node['type'] == 'func_call':		return analyze_func_call(node)
+    if node['type'] == 'func_call':	     	return analyze_func_call(node)
     if node['type'] == 'func_declaration':	return analyze_function_declaration(node)
     if node['type'] == 'if_statement':		return analyze_if_statement(node)
 
@@ -35,13 +37,21 @@ def analyze_assignment(node):
         print "got type {0}".format(type)
         if type == node['var_type']:
             #Add symbol to symbol table
-            if type(expression) == 'string':
+            if type == 'string':
+                #add length information into the table
                 symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False, strlen = len(expression)))
             else:
                 symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False))
         else:
             print "Error at line {0}: variable type and expression type don't coincide".format(node['lineno'])
             sys.exit()
+        #if the value to assign is a function call, check that its a legal call
+        try:
+            if expression['type'] == 'func_call':
+                analyze_func_call(expression)
+        except TypeError:
+            #value being assigned is an explicit value
+            pass
     else:
         #this is a simple reassignment of an existing variable
         #check if the variable has been declared
@@ -89,15 +99,15 @@ def analyze_func_call(node):
         if len(node['children']) < 2:
             print "Error at line {0}: function {1} requires {2} parameters, found 0".format(node['lineno'], id, len(symbol.params))
             sys.exit()
-        found_params = node['children'][1]
+        found_params = node['children'][1]['children']
         required_params = symbol.params
         if required_params == -1: return #function accepts an arbitrary number of parameters of arbitrary type
         if len(found_params) != len(required_params):
-            print "Error at line {0}: function {1} requires {2} parameters, found {3}".format(node['lineno'], id, len(symbol.params), len(found_params))
+            print "Error at line {0}: function {1} requires {2} parameters, found {3}".format(node['lineno'], id, len(required_params), len(found_params))
             sys.exit()
         for i, param in enumerate(found_params):
-            if param != required_params[i]:
-                print "Error at line {0}: parameter number {1} must be of type {2}, found {3}".format(node['lineno'], i, required_params[i], param)
+            if convert_types(type(param).__name__) != required_params[i]['children'][0]:
+                print "Error at line {0}: parameter number {1} must be of type {2}, found {3}".format(node['lineno'], i + 1, required_params[i]['children'][0], convert_types(type(param).__name__))
                 sys.exit()
 
 def analyze_function_declaration(node):
@@ -108,11 +118,14 @@ def analyze_function_declaration(node):
         print "Error at line {0}: function {1} already defined".format(node['lineno'], id)
         sys.exit()
     #Add function to the symbol table now to allow for recursion
-    symboltable.add_symbol(symbol_table.Symbol(id, node['func_type'], 'function', False, node['parameters']))
+    if node['parameters']:
+        symboltable.add_symbol(symbol_table.Symbol(id, node['func_type'], 'function', False, node['parameters']['children']))
+    else:
+        symboltable.add_symbol(symbol_table.Symbol(id, node['func_type'], 'function', False))
     #add parameters temporarily to the symbol table
     symboltable.enter_scope()
     for param in node['parameters']['children']:
-        symboltable.add_symbol(symbol_table.Symbol(param['children'][1]['children'][0], param['children'][0], 'var', False))
+        symboltable.add_symbol(symbol_table.Symbol(param['children'][1]['children'][0], param['children'][0], 'parameter', False))
     #check that the returned value coincides with the stated function type
     ret_type = 0
     #look for return statements in the function

@@ -86,7 +86,7 @@ def p_func_call(p):
     p[0]['lineno'] = p.lineno(1)
 
 #nested function declarations are not allowed, unlike gcc an error will be thrown,
-#this must be done during tree traversal
+#this is done during semantic analysis
 def p_func_declaration(p):
     """func_declaration : 	FUNCTION identifier LPAREN params_list RPAREN COLON RETURNS return_type LBRACKET translation_unit RBRACKET
     			|	FUNCTION identifier LPAREN RPAREN COLON RETURNS return_type LBRACKET translation_unit RBRACKET

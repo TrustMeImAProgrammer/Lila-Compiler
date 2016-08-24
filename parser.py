@@ -62,7 +62,7 @@ def p_decl_assignment(p):
     if len(p) == 5:
         p[0] = {'type':'assignment', 'var_type': p[1], 'constant': False, 'children': [p[2], p[4]], 'lineno': p.lineno(2)}
     else:
-        p[0] = {'type':'assignment', 'var_type': p[1], 'constant': True, 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
+        p[0] = {'type':'assignment', 'var_type': p[2], 'constant': True, 'children': [p[3], p[5]], 'lineno': p.lineno(1)}
 
 def p_assignment_increment(p):
     'assignment : ID PLUSPLUS'
@@ -192,7 +192,7 @@ def p_identifier(p):
 def p_value(p):
     """value 	:	NUMBER
 		|	SLITERAL
-    		|	FLOAT
+    		|	FLOATNUMBER
 		|	TRUE
 		|	FALSE
     """
@@ -278,7 +278,7 @@ def p_error(p):
 
 def parse(source):
     par = yacc.yacc()
-    return par.parse(source, debug=1)
+    return par.parse(source)
 
 if __name__ == "__main__":
     parser = yacc.yacc()

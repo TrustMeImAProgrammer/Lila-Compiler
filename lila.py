@@ -12,7 +12,7 @@ ast = parser.parse(source_code)
 analyzer.analyze(ast)
 print "Analyzed all lines successfully"
 
-# code = codegen.generate_code(ast)
+# code = codegen.generate(ast)
 # output = sys.argv[1].split('.')[0]
 # outfile = open(output, 'w')
 

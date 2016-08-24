@@ -28,7 +28,7 @@ reserved = {
 tokens = ["COLON", "SLITERAL", "CHARLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
           "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", "EQUALS", 
           "TIMESEQUALS", "DIVEQUALS", "PLUSEQUALS", "MINUSEQUALS", "PLUSPLUS", "MINUSMINUS", 
-          "COMMENT", 'COMMA', 'ID', 'NUMBER', 'FLOAT', 'TRUE', 'FALSE'] + list(reserved.values())
+          "COMMENT", 'COMMA', 'ID', 'NUMBER', 'FLOATNUMBER', 'TRUE', 'FALSE'] + list(reserved.values())
 
 #
 #	All tokens defined by functions are added in the same order as they appear in the lexer file.
@@ -69,16 +69,16 @@ def t_SLITERAL(t):
     return t
 
 def t_FALSE(t):
-    r"FALSE"
+    r"False"
     t.value = False
     return t
 
 def t_TRUE(t):
-    r"TRUE"
+    r"True"
     t.value = True
     return t
 
-def t_FLOAT(t):
+def t_FLOATNUMBER(t):
     r"[\d]*\.[\d]*"
     t.value = float(t.value)
     return t

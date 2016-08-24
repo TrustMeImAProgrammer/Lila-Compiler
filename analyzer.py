@@ -1,7 +1,7 @@
 import symbol_table
 import sys
 
-symboltable = symbol_table.SymbolTable(None)
+symboltable = symbol_table.SymbolTable()
 #add built-in names and functions to the symbol table
 symboltable.add_symbol(symbol_table.Symbol('print', None, 'function', False, -1)) #-1 is used by the print function to accept a variable number of arguments
 
@@ -23,7 +23,7 @@ def analyze_assignment(node):
     id = node['children'][0]['children'][0]
     print "expression id = {0} at line {1}".format(id, node['lineno'])
     expression = node['children'][1]
-    if(node['var_type']): 
+    if node['var_type']:
         #this is a declaration and assignment
         #check if variable has been defined already in the current scope, lila is statically scoped and
         #does variable shadowing
@@ -35,7 +35,10 @@ def analyze_assignment(node):
         print "got type {0}".format(type)
         if type == node['var_type']:
             #Add symbol to symbol table
-            symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False))
+            if type(expression) == 'string':
+                symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False, strlen = len(expression)))
+            else:
+                symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False))
         else:
             print "Error at line {0}: variable type and expression type don't coincide".format(node['lineno'])
             sys.exit()
@@ -88,7 +91,7 @@ def analyze_func_call(node):
             sys.exit()
         found_params = node['children'][1]
         required_params = symbol.params
-        if required_params == -1: return #function accepts an arbitrary number of parameters or arbitrary type
+        if required_params == -1: return #function accepts an arbitrary number of parameters of arbitrary type
         if len(found_params) != len(required_params):
             print "Error at line {0}: function {1} requires {2} parameters, found {3}".format(node['lineno'], id, len(symbol.params), len(found_params))
             sys.exit()

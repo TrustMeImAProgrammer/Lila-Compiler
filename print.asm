@@ -1,6 +1,9 @@
 
 
 ;These functions call sys_write in the linux kernel and writes to stdout
+;The parameters must be pushed onto the stack prior to the call, in the case
+;of print_text, the length of the string must be pushed too
+GLOBAL print_number, print_text
 
 print_number:
 	push ebp
@@ -17,8 +20,8 @@ print_number:
 	add esp,  4					;pop the stack buffer
 	pop ebp
 	ret
-
-print_text: push ebp
+print_text:
+    push ebp
 	mov ebp,  esp
 	mov ecx,  [ebp+12]			;get the address of the text to print
 	mov eax,  4					;sys_write

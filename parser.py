@@ -1,3 +1,4 @@
+import sys
 import yacc
 from tokenizer import tokens
 
@@ -274,7 +275,8 @@ def p_type_info(p):
 
 #Error rule for syntax errors
 def p_error(p):
-    print("Syntax error")
+    print "A Syntax error has been found: {0}".format(p)
+    sys.exit(1)
 
 def parse(source):
     par = yacc.yacc()
@@ -286,9 +288,9 @@ if __name__ == "__main__":
         try:
             s = raw_input('calc > ')
         except EOFError:
-            break;
+            break
         if not s: continue
-        result = par.parse(s)
+        result = parser.parse(s)
         print(result)
 
 

@@ -12,23 +12,23 @@ data = data + 'FalseLen: equ $-False' + '\n'
 
 bss = "SECTION .bss" + '\n'
 
-text = "_start:" + '\n'
+text = "SECTION .text" + '\n'
+text += "EXTERN print_number, print_text" + '\n'
+text += "global _start" + '\n'
+text += "_start:" + '\n'
 
 rodata_index = 0
 data_index = 0
 
-builtin = "SECTION .text" + '\n'
-builtin += "global _start" + '\n'
-builtin_functions = ['print', 'str']
+builtin_functions = ['print']
 
 def generate(node):
     initialize_code()
     generate_text(node)
     terminate_code()
-    return rodata + data + bss + builtin + text
+    return rodata + data + bss + text
 
 def initialize_code():
-    generate_builtin_functions()
     global text
     text += '\t' + "mov ebp, esp" + '\n'
 
@@ -37,17 +37,18 @@ def terminate_code():
     text += '\t' + "mov eax,  1" + '\n'
     text += '\t' + "mov ebx,  0" + '\n'
     text += '\t' + "int 0x80"
-def generate_builtin_functions():
-    global builtin
-    printf = open('print.asm', 'r')
-    builtin += printf.read()
-    printf.close()
 
 def generate_text(node):
-    if node['type'] == 'translation_unit':	generate_translation_unit(node)
-    elif node['type'] == 'assignment':		generate_assignment(node)
-    elif node['type'] == 'func_call':       generate_func_call(node)
-    
+    if node['type'] == 'translation_unit':		generate_translation_unit(node)
+    elif node['type'] == 'assignment':			generate_assignment(node)
+    elif node['type'] == 'func_call':       	generate_func_call(node)
+    elif node['type'] == 'func_declaration':	generate_function_declaration(node)
+
+
+def generate_function_declaration(node):
+    global text
+    text += "push ebp"
+
 def generate_translation_unit(node):
     for child in node['children']:
         generate_text(child)
@@ -93,7 +94,8 @@ def generate_func_call(node):
             elif param['children'][0] == "string":
                 rodata += "Label" + str(rodata_index) + ": db " + '"' + node + '",0' + '\n'
                 text += '\t' + "push " + "Label" + str(rodata_index) + '\n'
-            #TODO pop params off stack
+        text += '\t' + "call " + function.name + '\n'
+        text += '\t' + "add esp,  " + str(len(function.params) * 4) + '\n'
 
 
 

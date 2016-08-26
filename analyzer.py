@@ -127,7 +127,7 @@ def analyze_function_declaration(node):
     symboltable.enter_scope()
     for param in node['parameters']['children']:
         symboltable.add_symbol(symbol_table.Symbol(param['children'][1]['children'][0], param['children'][0], 'parameter', False))
-    #check that the returned value coincides with the stated function type
+    #analyze the function's body
     ret_type = 0
     for child in node['children'][1]['children']:
         if child['type'] == 'func_declaration':
@@ -141,16 +141,12 @@ def analyze_function_declaration(node):
             if ret_type != node['func_type']:
                 print "Error at line {0}: wrong return type {1}".format(child['lineno'], ret_type)
                 sys.exit(1)
+        else:
+            analyze(child)
     #if there are no return statements but the function isn't of void type
     if ret_type == 0 and node['func_type'] != 'void':
         print "Error at line {0}: Non-void function {1} without return statement".format(node['lineno'], id)
         sys.exit(1)
-    #analyze the function's body (translation unit)
-    for child in node['children'][1]['children']:
-        #the return statement has already been analyzed, reanalizying would
-        #make the analyzer think its outside a function and throw an error
-        if child['type'] != 'return':
-            analyze(child)
     #remove the parameters from the scope again
     symboltable.exit_scope()
 

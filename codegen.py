@@ -1,5 +1,8 @@
 import analyzer
 import symbol_table
+#table contains all global variables, local variables have been
+#removed when the analyzer left the function's scope
+#there must be added again as the generator goes through the functions
 table = analyzer.symboltable
 
 
@@ -61,11 +64,31 @@ def generate_declaration(node, place):
     generate_expression(node['children'][1], place)
     #    if node['var_type'] == 'integer': THIS MIGHT ACTUALLY WORK FOR ALL EXPRESSION TYPES
     text[place] += '\t' + "sub esp,  4" + '\n'
-    text[place] += '\t' + "mov [ebp-4], eax" + '\n'
+    variables = 0
     for symbol in table.scopes[len(table.scopes) - 1]:
-        symbol.offset += 4
+        if symbol.kind == 'var': #parameters and functions never change offset
+            symbol.offset += 4
+            variables += 1
     var = table.find_symbol(node['children'][0]['children'][0])
-    var.offset = 4
+    if not var:
+        #local var
+        var.offset = 4
+
+    else:
+        #global var
+    if place == "functions":
+        #the offset from ebp of any variable is given by the number of variables in the scope
+        #plus four (since 0 is the saved frame pointer)
+        text[place] += '\t' + "mov [ebp-" + str(variables * 4 + 4) + "], eax" + '\n'
+        #readd the variable to the table since local variables are removed during analysis
+        table.add_symbol(symbol_table.Symbol(node['children'][0]['children'][0], node['var_type'], offset=4))
+    else:
+        #this is a global variable
+        var = table.find_symbol(node['children'][0]['children'][0])
+        var.offset = 4
+        text[place] += '\t' + "mov [ebp-" + str + "], eax" + '\n'
+
+
 
 #TODO
 def generate_reassignment(node, place):

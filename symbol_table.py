@@ -5,7 +5,7 @@ class Symbol:
         self.kind = kind # kind = function, var, or parameter
         self.is_constant = constant
         self.params = params #parameters needed in case its a function
-        self.offset = offset #offset from esp in case its a local variable, used only in code generation
+        self.offset = offset #offset from ebp in case its a local variable, used only in code generation
         self.length = strlen #length of strings
 #--------------------------------
 #This is a stack of scopes, 

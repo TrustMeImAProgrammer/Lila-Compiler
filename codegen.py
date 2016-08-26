@@ -1,4 +1,5 @@
 import analyzer
+import symbol_table
 table = analyzer.symboltable
 
 
@@ -36,18 +37,15 @@ def terminate_code():
     global text
     text += '\t' + "mov eax,  1" + '\n'
     text += '\t' + "mov ebx,  0" + '\n'
-    text += '\t' + "int 0x80"
+    text += '\t' + "int 0x80" + '\n'
 
 def generate_text(node):
     if node['type'] == 'translation_unit':		generate_translation_unit(node)
     elif node['type'] == 'assignment':			generate_assignment(node)
     elif node['type'] == 'func_call':       	generate_func_call(node)
     elif node['type'] == 'func_declaration':	generate_function_declaration(node)
+    elif node['type'] == 'return':              generate_return_statement(node)
 
-
-def generate_function_declaration(node):
-    global text
-    text += "push ebp"
 
 def generate_translation_unit(node):
     for child in node['children']:
@@ -75,6 +73,30 @@ def generate_declaration(node):
 def generate_reassignment(node):
     pass
 
+def generate_function_declaration(node):
+    global text
+    id = node['children'][0]['children'][0]
+    text += id + ':' + '\n'
+    #first of all create the stack frame
+    text += '\t' + "push ebp" + '\n'
+    text += '\t' + "mov ebp,  esp" + '\n'
+    #function assumes parameters are available since these will be pushed by the function call
+    function = table.find_symbol(id)
+    parameters = node['parameters']['children']
+    table.enter_scope()
+    i = 0
+    for param in parameters:
+        table.add_symbol(symbol_table.Symbol(param['children'][1]['children'][0], param['children'][0],
+                                             'parameter', False, offset = (len(function.params)-i) * 4))
+        i += 1
+    generate(node['children'][1])
+    #if function is void the stack frame must be destroyed here, otherwise it's
+    #done by the return statement(s)
+    if node['func_type'] == "void":
+        delete_ar()
+    table.exit_scope()
+    text += '\n'
+
 def generate_func_call(node):
     id = node['children'][0]['children'][0]
     #first check if the call is to a built in function
@@ -88,17 +110,18 @@ def generate_func_call(node):
     global text, rodata, rodata_index
     if function.params:
         #push parameters in the stack
-        for param in function.params:
-            if param['children'][0] == "integer":
-                text += '\t' + "push " + str(param['children'][1]['children'][0]) + '\n'
-            elif param['children'][0] == "string":
-                rodata += "Label" + str(rodata_index) + ": db " + '"' + node + '",0' + '\n'
-                text += '\t' + "push " + "Label" + str(rodata_index) + '\n'
-        text += '\t' + "call " + function.name + '\n'
+        found_params = node['children'][1]['children']
+        for param in found_params:
+            generate_expression(param)
+            text += '\t' + "push eax" + '\n'
+    text += '\t' + "call " + function.name + '\n'
+    if function.params:
         text += '\t' + "add esp,  " + str(len(function.params) * 4) + '\n'
 
-
-
+def generate_return_statement(node):
+    #return values are passed on eax
+    generate_expression(node['children'][0])
+    delete_ar()
 
 def generate_call_to_print(node):
     arg_list = node['children'][1]['children'] #array of expressions
@@ -137,3 +160,49 @@ def generate_expression(node):
         id = table.find_symbol(node['children'][0])
         if id.type == 'integer' or id.type == 'string':
             text += '\t' + "mov eax,  DWORD [ebp-" + str(id.offset) +']' + '\n'
+    elif node['type'] == "func_call":
+        generate_func_call(node)
+    elif node['type'] == "modulo": #max dividend 2^(32-1)
+        generate_expression(node['children'][0])
+        text += '\t' + "push eax" + '\n'
+        generate_expression(node['children'][1])
+        text += '\t' + "mov ecx,  eax" + '\n'
+        text += '\t' + "pop eax" + '\n'
+        text += '\t' + "mov edx,  0" + '\n' #make sure edx is cleared as it can mess the division up
+        text += '\t' + "div ecx" + '\n'
+        text += '\t' + "mov eax,  edx" +'\n' #remainder is in edx but we return values in eax
+    elif node['type'] == '+' or node['type'] == '-':
+        generate_expression(node['children'][0])
+        text += '\t' + "push eax" + '\n'
+        generate_expression(node['children'][1])
+        text += '\t' + "pop ebx" + '\n'
+        if node['type'] == '+':
+            #there's no overflow flag checking
+            text += '\t' + "add eax, ebx" + '\n'
+        else:
+            text += '\t' + "sub eax,  ebx" + '\n'
+    elif node['type'] == '*' or node['type'] == '/':
+        generate_expression(node['children'][0])
+        text += '\t' + "push eax" +'\n'
+        generate_expression(node['children'][1])
+        text += '\t' + "pop ebx" + '\n'
+        if node['type'] == '*':
+            #again no overflow checking is done for now, the value in edx is ignored
+            text += '\t' + "mul ebx" + '\n'
+        else:
+            text += '\t' + "div ebx" + '\n'
+    #TODO implement booleans
+    elif node['type'] == "not":
+        pass
+    elif node['type'] == "and":
+        pass
+    elif node['type'] == "or":
+        pass
+
+
+
+def delete_ar():
+    global text
+    text += '\t' + "mov esp,  ebp" + '\n'
+    text += '\t' + "pop ebp" + '\n'
+    text += '\t' + "ret" + '\n'

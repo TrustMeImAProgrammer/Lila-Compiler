@@ -16,6 +16,7 @@ def analyze(node):
     if node['type'] == 'func_call':	     	return analyze_func_call(node)
     if node['type'] == 'func_declaration':	return analyze_function_declaration(node)
     if node['type'] == 'if_statement':		return analyze_if_statement(node)
+    if node['type'] == 'return':            return analyze_return_statement(node)
 
 def analyze_translation_unit(node):
     for child in node['children']:
@@ -31,7 +32,7 @@ def analyze_assignment(node):
         #does variable shadowing
         if symboltable.check_scope(id):
             print "Error at line {0}: variable {1} already defined".format(node['lineno'], id)
-            sys.exit()
+            sys.exit(1)
         #check type of expression
         type = type_check(expression)
         print "got type {0}".format(type)
@@ -44,7 +45,7 @@ def analyze_assignment(node):
                 symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False))
         else:
             print "Error at line {0}: variable type and expression type don't coincide".format(node['lineno'])
-            sys.exit()
+            sys.exit(1)
         #if the value to assign is a function call, check that its a legal call
         try:
             if expression['type'] == 'func_call':
@@ -58,12 +59,12 @@ def analyze_assignment(node):
         symbol = symboltable.find_symbol(id)
         if not symbol:
             print "Error at line {0}: variable {1} does not exist".format(node['lineno'], id)
-            sys.exit()
+            sys.exit(1)
         #get type of expression being assigned
         type = type_check(expression)
         if not type == symbol.type:
             print "Error at line {0}: cannot assigned expression of type {1} to variable of type {2}".format(node['lineno'], type, symbol.type)
-            sys.exit()
+            sys.exit(1)
 
 def analyze_shorthand_assignment(node):
     #first check if the variable being modified has been defined
@@ -71,20 +72,20 @@ def analyze_shorthand_assignment(node):
     symbol = symboltable.find_symbol(id)
     if not symbol:
         print "Error at line {0}: use of undefined variable {1}".format(node['lineno'], id)
-        sys.exit()
+        sys.exit(1)
     #now check if the variable is an lvalue
     if symbol.kind == 'function':
         print "Error at line {0}: cannot perform assignment to {1}, lvalue required".format(node['lineno'], id)
-        sys.exit()
+        sys.exit(1)
     #next, check if the variable is a constant
     if symbol.is_constant:
         print "Error at line {0}: cannot modify value of {1}, because it's a constan".format(node['lineno'], id)
-        sys.exit()
+        sys.exit(1)
     #now check if plusplus or minus_minusis a valid operation on this type of variable
     print symbol.type
     if symbol.type != 'integer' and symbol.type != 'real':
         print "Error at line {0}: cannot petform operation on variable of type {1}".format(node['lineno'], symbol.type)
-        sys.exit()    
+        sys.exit(1)    
 
 def analyze_func_call(node):
     #check that the function has been declared
@@ -93,22 +94,22 @@ def analyze_func_call(node):
     symbol = symboltable.find_symbol(id)
     if not symbol:
         print "Error at line {0}: undefined function {1}".format(node['lineno'], id)
-        sys.exit()
+        sys.exit(1)
     if symbol.params:
         #check the parameters coincide with the func declaration
         if len(node['children']) < 2:
             print "Error at line {0}: function {1} requires {2} parameters, found 0".format(node['lineno'], id, len(symbol.params))
-            sys.exit()
+            sys.exit(1)
         found_params = node['children'][1]['children']
         required_params = symbol.params
         if required_params == -1: return #function accepts an arbitrary number of parameters of arbitrary type
         if len(found_params) != len(required_params):
             print "Error at line {0}: function {1} requires {2} parameters, found {3}".format(node['lineno'], id, len(required_params), len(found_params))
-            sys.exit()
+            sys.exit(1)
         for i, param in enumerate(found_params):
             if convert_types(type(param).__name__) != required_params[i]['children'][0]:
                 print "Error at line {0}: parameter number {1} must be of type {2}, found {3}".format(node['lineno'], i + 1, required_params[i]['children'][0], convert_types(type(param).__name__))
-                sys.exit()
+                sys.exit(1)
 
 def analyze_function_declaration(node):
     #check the function hasn't been declared already
@@ -116,7 +117,7 @@ def analyze_function_declaration(node):
     print "func declaration id = {0}".format(id)
     if symboltable.check_scope(id):
         print "Error at line {0}: function {1} already defined".format(node['lineno'], id)
-        sys.exit()
+        sys.exit(1)
     #Add function to the symbol table now to allow for recursion
     if node['parameters']:
         symboltable.add_symbol(symbol_table.Symbol(id, node['func_type'], 'function', False, node['parameters']['children']))
@@ -128,38 +129,47 @@ def analyze_function_declaration(node):
         symboltable.add_symbol(symbol_table.Symbol(param['children'][1]['children'][0], param['children'][0], 'parameter', False))
     #check that the returned value coincides with the stated function type
     ret_type = 0
-    #look for return statements in the function
     for child in node['children'][1]['children']:
         if child['type'] == 'func_declaration':
             #found nested function declaration throw error
             print "Error at line {0}: Nested function declaration".format(child['lineno'])
-            sys.exit()
+            sys.exit(1)
+        #look for return statements in the function
         if child['type'] == 'return':
             ret_type = type_check(child['children'][0])
             #if the return type doesn't match the function's type
             if ret_type != node['func_type']:
                 print "Error at line {0}: wrong return type {1}".format(child['lineno'], ret_type)
-                sys.exit()
+                sys.exit(1)
     #if there are no return statements but the function isn't of void type
     if ret_type == 0 and node['func_type'] != 'void':
         print "Error at line {0}: Non-void function {1} without return statement".format(node['lineno'], id)
-        sys.exit()
+        sys.exit(1)
+    #analyze the function's body (translation unit)
+    analyze(node['children'][1])
     #remove the parameters from the scope again
     symboltable.exit_scope()
+
+def analyze_return_statement(node):
+    #this return statement is not within a function
+    print "Error at line {0}: return statement outside a function".format(node['lineno'])
+    sys.exit(1)
 
 def analyze_if_statement(node):
     #check that the condition is a boolean expression
     condition = type_check(node['children'][0])
     if condition != 'boolean':
         print "Error at line {0}: condition must be a boolean expression".format(node['lineno'])
-        sys.exit()
+        sys.exit(1)
     #now analyze the if block
     analyze_translation_unit(node['children'][1])
     
 #an expression can be either a binary op, unary op, 
-#func call, parameter list, identifier or literal value
+#func call, identifier or literal value
 #type checking is done using a post-order tree traversal
 def type_check(node):
+    """This function returns an expression's type
+    and also analyzes the expression"""
     if not isinstance(node, dict): #if node is not a dictionary then it's an explicit value
         global type
         return convert_types(type(node).__name__)
@@ -172,7 +182,7 @@ def type_check(node):
         else:
             obj = 'variable' if node['type'] == 'ID' else 'function'
             print "Error at line {0}: use of undefined {1} {2}".format(node['lineno'], obj, id)
-            sys.exit()
+            sys.exit(1)
     if node['type'] == 'params_list':
         parameters = []
         for param in node['children']:
@@ -183,34 +193,34 @@ def type_check(node):
         if type == 'integer' or type == 'real':
             return type
         print "Error at line {0}: invalid operand type, expected integer or float, got {1}".format(node['lineno'], type)
-        sys.exit()
+        sys.exit(1)
     if node['type'] == 'not':
         type = type_check(node['children'][0])
         if type == 'boolean':
             return type
         print "Error at line {0}: invalid operand type, expected boolean, got {1}".format(node['lineno'], type)
-        sys.exit()
+        sys.exit(1)
     #and and or operations are only defined for boolean types
     if node['type'] == 'and' or node['type'] == 'or':
         ltype = type_check(node['children'][0])
         if not ltype == 'boolean':
             print "Error at line {0}: invalid left operand type, expected boolean, got {1}".format(node['lineno'], ltype)
-            sys.exit()
+            sys.exit(1)
         rtype = type_check(node['children'][1])
         if not rtype == 'boolean':
             print "Error at line {0}: invalid right operand type, expected boolean, got {1}".format(node['lineno'], rtype)
-            sys.exit()
+            sys.exit(1)
         return 'boolean'
     #modulo operation only accepts integers
     if node['type'] == 'modulo':
         ltype = type_check(node['children'][0])
         if not ltype == 'integer':
             print "Error at line {0}: invalid left operand type, expected integer, got {1}".format(node['lineno'], ltype)
-            sys.exit()
+            sys.exit(1)
         rtype = type_check(node['children'][1])
         if not rtype == 'integer':
             print "Error at line {0}: invalid right operand type, expected integer, got {1}".format(node['lineno'], rtype)
-            sys.exit()
+            sys.exit(1)
         return 'integer'
     #these operations can be done on real or integer types
     if (node['type'] == '+' or node['type'] == '-' or node['type'] == '*' or node['type'] == '/' 
@@ -218,11 +228,11 @@ def type_check(node):
         ltype = type_check(node['children'][0])
         if ltype != 'integer' and ltype != 'real':
             print "Error at line {0}: invalid left operand type, expected integer or real, got {1}".format(node['lineno'], ltype)
-            sys.exit()
+            sys.exit(1)
         rtype = type_check(node['children'][1])
         if rtype != 'integer' and rtype != 'real':
             print "Error at line {0}: invalid right operand type, expected integer or real, got {1}".format(node['lineno'], rtype)
-            sys.exit()
+            sys.exit(1)
         #type inference for numeric expressions:
         if node['type'] == '+' or node['type'] == '-' or node['type'] == '*' or node['type'] == '/':
             return 'integer' if ltype == 'integer' and rtype == 'integer' else 'real'
@@ -231,7 +241,7 @@ def type_check(node):
     if node['type'] == 'isequals':
         return 'boolean'
     print "Error: unknown type" #This error should never happen
-    sys.exit()
+    sys.exit(1)
 
 def convert_types(type):
     switcher = {

@@ -61,9 +61,9 @@ def p_decl_assignment(p):
 		  | CONST type_info identifier EQUALS value
     """
     if len(p) == 5:
-        p[0] = {'type':'assignment', 'var_type': p[1], 'constant': False, 'children': [p[2], p[4]], 'lineno': p.lineno(2)}
+        p[0] = {'type':'assignment', 'var_type': p[1], 'constant': False, 'children': [p[2], p[4]], 'lineno': p.lineno(3)}
     else:
-        p[0] = {'type':'assignment', 'var_type': p[2], 'constant': True, 'children': [p[3], p[5]], 'lineno': p.lineno(1)}
+        p[0] = {'type':'assignment', 'var_type': p[2], 'constant': True, 'children': [p[3], p[5]], 'lineno': p.lineno(4)}
 
 def p_assignment_increment(p):
     'assignment : ID PLUSPLUS'

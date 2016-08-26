@@ -1,9 +1,7 @@
 import analyzer
 import symbol_table
-#table contains all global variables, local variables have been
-#removed when the analyzer left the function's scope
-#there must be added again as the generator goes through the functions
-table = analyzer.symboltable
+
+table = symbol_table.SymbolTable()
 
 
 rodata = "SECTION .rodata" + '\n'
@@ -65,29 +63,14 @@ def generate_declaration(node, place):
     #    if node['var_type'] == 'integer': THIS MIGHT ACTUALLY WORK FOR ALL EXPRESSION TYPES
     text[place] += '\t' + "sub esp,  4" + '\n'
     variables = 0
-    for symbol in table.scopes[len(table.scopes) - 1]:
+    for symbol in table.scopes[len(table.scopes) - 1]: #the innermost scope
         if symbol.kind == 'var': #parameters and functions never change offset
-            symbol.offset += 4
             variables += 1
-    var = table.find_symbol(node['children'][0]['children'][0])
-    if not var:
-        #local var
-        var.offset = 4
-
-    else:
-        #global var
-    if place == "functions":
-        #the offset from ebp of any variable is given by the number of variables in the scope
-        #plus four (since 0 is the saved frame pointer)
-        text[place] += '\t' + "mov [ebp-" + str(variables * 4 + 4) + "], eax" + '\n'
-        #readd the variable to the table since local variables are removed during analysis
-        table.add_symbol(symbol_table.Symbol(node['children'][0]['children'][0], node['var_type'], offset=4))
-    else:
-        #this is a global variable
-        var = table.find_symbol(node['children'][0]['children'][0])
-        var.offset = 4
-        text[place] += '\t' + "mov [ebp-" + str + "], eax" + '\n'
-
+    #the offset from ebp of any variable is given by the number of variables in the scope
+    #plus four (since 0 is the saved frame pointer)
+    table.add_symbol(symbol_table.Symbol(node['children'][0]['children'][0], node['var_type'],
+                                         offset = 4 * variables + 4))
+    text[place] += '\t' + "mov [ebp-" + str(variables * 4 + 4) + "], eax" + '\n'
 
 
 #TODO
@@ -102,15 +85,18 @@ def generate_function_declaration(node):
     text['functions'] += '\t' + "push ebp" + '\n'
     text['functions'] += '\t' + "mov ebp,  esp" + '\n'
     #function assumes parameters are available since these will be pushed by the function call
-    function = table.find_symbol(id)
     parameters = node['parameters']['children']
+    if node['parameters']:
+        table.add_symbol(symbol_table.Symbol(id, node['func_type'], 'function', False, parameters))
+    else:
+        table.add_symbol(symbol_table.Symbol(id, node['func_type'], 'function', False))
     table.enter_scope()
     i = 0
     for param in parameters:
         #offset is calculated as the (number of parameters - i) * 4 + 4
         #first four is due to the size in bytes, second four is due to the return address being on the way
         table.add_symbol(symbol_table.Symbol(param['children'][1]['children'][0], param['children'][0],
-                                             'parameter', False, offset = (len(function.params)-i) * 4 + 4))
+                                             'parameter', False, offset = (len(parameters)-i) * 4 + 4))
         i += 1
     generate_text(node['children'][1], 'functions')
     #if function is void the stack frame must be destroyed here, otherwise it's

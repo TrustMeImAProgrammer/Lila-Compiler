@@ -4,7 +4,7 @@
 ;The parameters must be pushed onto the stack prior to the call, in the case
 ;of print_text, the length of the string must be pushed too
 GLOBAL print_number, print_text
-
+;TODO print numbers > 9
 print_number:
 	push ebp
 	mov ebp,  esp

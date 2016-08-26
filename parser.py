@@ -105,7 +105,7 @@ def p_return_type(p):
 
 def p_return_statement(p):
     'return_statement : RETURN expression'
-    p[0] = {'type': 'return', 'children': [p[2]], 'lineno': p.lineno(2)}
+    p[0] = {'type': 'return', 'children': [p[2]], 'lineno': p.lineno(1)}
 
 
 #---------------------

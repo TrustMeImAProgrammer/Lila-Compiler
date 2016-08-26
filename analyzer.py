@@ -146,7 +146,11 @@ def analyze_function_declaration(node):
         print "Error at line {0}: Non-void function {1} without return statement".format(node['lineno'], id)
         sys.exit(1)
     #analyze the function's body (translation unit)
-    analyze(node['children'][1])
+    for child in node['children'][1]['children']:
+        #the return statement has already been analyzed, reanalizying would
+        #make the analyzer think its outside a function and throw an error
+        if child['type'] != 'return':
+            analyze(child)
     #remove the parameters from the scope again
     symboltable.exit_scope()
 

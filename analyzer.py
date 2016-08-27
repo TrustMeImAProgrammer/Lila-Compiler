@@ -255,8 +255,8 @@ def type_check(node):
         if node['type'] == '+' or node['type'] == '-' or node['type'] == '*' or node['type'] == '/':
             return 'integer' if ltype == 'integer' and rtype == 'integer' else 'real'
         return 'boolean'
-    #isequals accepts any type
-    if node['type'] == 'isequals':
+    #isequals and != accept any type
+    if node['type'] == '==' or node['type'] == '!=':
         return 'boolean'
     print "Error: unknown type" #This error should never happen
     sys.exit(1)

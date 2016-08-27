@@ -18,6 +18,7 @@ text['code'] += "_start:" + '\n'
 rodata_index = 0
 data_index = 0
 label_index = 0
+loop_index = 0
 
 builtin_functions = ['print']
 
@@ -43,6 +44,7 @@ def generate_text(node, place):
     elif node['type'] == 'return':              generate_return_statement(node)
     elif node['type'] == 'if_statement' or node['type'] == 'if_else_statement':
         generate_if_statement(node, place)
+    elif node['type'] == 'while_statement':     generate_while_statement(node, place)
 
 
 def generate_translation_unit(node, place):
@@ -133,15 +135,32 @@ def generate_if_statement(node, place):
         if_block = node['children'][1]
     generate_expression(expression, place)
     text[place] += '\t' + "cmp eax,  0" + '\n'
+    if_index = label_index
     text[place] += '\t' + "je .L" + str(label_index) + '\n'
+    label_index += 1
     generate_text(if_block, place)
     if else_block:
-        text[place] += '\t' + "jmp .L" + str(label_index + 1) + '\n'
-    text[place] += ".L" + str(label_index) + ':' + '\n'
+        else_index = label_index
+        text[place] += '\t' + "jmp .L" + str(label_index) + '\n'
+        label_index+= 1
+    text[place] += ".L" + str(if_index) + ':' + '\n'
     if else_block:
         generate_text(else_block, place)
-        text[place] += ".L" + str(label_index + 1) + ':' + '\n'
-    label_index += 2 if else_block else 1
+        text[place] += ".L" + str(else_index) + ':' + '\n'
+
+def generate_while_statement(node, place):
+    global label_index, loop_index
+    generate_expression(node['children'][0], place)
+    s_index = loop_index
+    text[place] += "S" + str(loop_index) + ':' + '\n'
+    loop_index += 1
+    text[place] += '\t' + "cmp eax,  0" + '\n'
+    while_index = label_index
+    text[place] += '\t' + "je .L" + str(label_index) + '\n'
+    label_index += 1
+    generate_translation_unit(node, place)
+    text[place] += '\t' + "jmp near S" + str(s_index) + '\n'
+    text[place] += ".L" + str(while_index) + ':' + '\n'
 
 def generate_call_to_print(node, place):
     arg_list = node['children'][1]['children'] #array of expressions
@@ -202,9 +221,10 @@ def generate_expression(node, place):
         text[place] += '\t' + "pop ebx" + '\n'
         if node['type'] == '+':
             #there's no overflow flag checking
-            text[place] += '\t' + "add eax, ebx" + '\n'
+            text[place] += '\t' + "add ebx,  eax" + '\n'
         else:
-            text[place] += '\t' + "sub eax,  ebx" + '\n'
+            text[place] += '\t' + "sub ebx,  eax" + '\n'
+        text[place] += '\t' + "mov eax,  ebx" + '\n'
     elif node['type'] == '*' or node['type'] == '/':
         generate_expression(node['children'][0], place)
         text[place] += '\t' + "push eax" +'\n'
@@ -236,7 +256,7 @@ def generate_expression(node, place):
         text[place] += '\t' + "push eax" + '\n'
         generate_expression(node['children'][1], place)
         text[place] += '\t' + "pop ebx" + '\n'
-        text[place] += '\t' + "cmp eax,  ebx" +'\n'
+        text[place] += '\t' + "cmp ebx,  eax" +'\n'
         if node['type'] == '>':
             text[place] += '\t' + "setg bl" +'\n'
         elif node['type'] == '<':

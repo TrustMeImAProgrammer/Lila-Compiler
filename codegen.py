@@ -141,7 +141,7 @@ def generate_if_statement(node, place):
     if else_block:
         generate_text(else_block, place)
         text[place] += ".L" + str(label_index + 1) + ':' + '\n'
-    label_index += 1
+    label_index += 2 if else_block else 1
 
 def generate_call_to_print(node, place):
     arg_list = node['children'][1]['children'] #array of expressions
@@ -230,6 +230,26 @@ def generate_expression(node, place):
         generate_expression(node['children'][1], place)
         text[place] += '\t' + "pop ebx" + '\n'
         text[place] += '\t' + "or eax,  ebx" + '\n'
+    elif node['type'] == '>' or node['type'] == '<' or node['type'] == '>='\
+            or node['type'] == '<=' or node['type'] == '==' or node['type'] == '!=':
+        generate_expression(node['children'][0], place)
+        text[place] += '\t' + "push eax" + '\n'
+        generate_expression(node['children'][1], place)
+        text[place] += '\t' + "pop ebx" + '\n'
+        text[place] += '\t' + "cmp eax,  ebx" +'\n'
+        if node['type'] == '>':
+            text[place] += '\t' + "setg bl" +'\n'
+        elif node['type'] == '<':
+            text[place] += '\t' + "setl bl" +'\n'
+        elif node['type'] == '>=':
+            text[place] += '\t' + "setge bl" +'\n'
+        elif node['type'] == '<=':
+            text[place] += '\t' + "setle bl" + '\n'
+        elif node['type'] == '!=':
+            text[place] += '\t' + "setne bl" + '\n'
+        elif node['type'] == '==':
+            text[place] += '\t' + "sete bl" + '\n'
+        text[place] += '\t' + "movsx eax,  bl" + '\n'
 
 
 def delete_ar():

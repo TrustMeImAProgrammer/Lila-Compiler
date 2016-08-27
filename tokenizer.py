@@ -26,7 +26,7 @@ reserved = {
     'void' : 'VOID'
 }
 tokens = ["COLON", "SLITERAL", "CHARLITERAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET",
-          "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", "EQUALS", 
+          "PLUS", "MINUS", "GT", "GE", "LT", "LE", "TIMES", "DIVIDE", "EQUALS", "NOTEQUALS",
           "TIMESEQUALS", "DIVEQUALS", "PLUSEQUALS", "MINUSEQUALS", "PLUSPLUS", "MINUSMINUS", 
           "COMMENT", 'COMMA', 'ID', 'NUMBER', 'FLOATNUMBER', 'TRUE', 'FALSE'] + list(reserved.values())
 
@@ -46,6 +46,7 @@ t_MINUS = r"-"
 t_TIMES = r"\*"
 t_DIVIDE = r"/"
 t_EQUALS = r"="
+t_NOTEQUALS = r"!="
 t_GT = r">"
 t_GE = r">="
 t_LT = r"<"

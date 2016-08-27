@@ -17,6 +17,7 @@ def analyze(node):
     if node['type'] == 'func_declaration':	return analyze_function_declaration(node)
     if node['type'] == 'if_statement':		return analyze_if_statement(node)
     if node['type'] == 'if_else_statement': return analyze_if_else_statement(node)
+    if node['type'] == 'while_statement':   return analyze_while_statement(node)
     if node['type'] == 'return':            return analyze_return_statement(node)
 
 def analyze_translation_unit(node):
@@ -172,6 +173,13 @@ def analyze_if_else_statement(node):
     analyze_translation_unit(node['children'][0]['children'][1])
     #and now the else block
     analyze_translation_unit(node['children'][1]['children'][0])
+
+def analyze_while_statement(node):
+    condition_type = type_check(node['children'][0])
+    if condition_type != 'boolean':
+        print "Error at line {0}: condition must be a boolean expression".format(node['lineno'])
+        sys.exit(1)
+    analyze_translation_unit(node['children'][1])
 
 #an expression can be either a binary op, unary op, 
 #func call, identifier or literal value

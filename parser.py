@@ -120,8 +120,7 @@ def p_if_else_statement(p):
     p[0] = {'type': 'if_else_statement', 'children': [p[1], p[2]]}
 
 def p_if_statement(p):
-    """if_statement : IF binary_op LBRACKET translation_unit RBRACKET
-                    | IF expression LBRACKET translation_unit RBRACKET"""
+    """if_statement : IF expression LBRACKET translation_unit RBRACKET"""
     p[0] = {'type': 'if_statement', 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
 
 def p_else_statement(p):
@@ -129,7 +128,7 @@ def p_else_statement(p):
     p[0] = {'type': 'else_statement', 'children': [p[3]], 'lineno': p.lineno(1)}
 
 def p_while_statement(p):
-    'while_statement : WHILE binary_op LBRACKET translation_unit RBRACKET'
+    """while_statement : WHILE expression LBRACKET translation_unit RBRACKET"""
     p[0] = {'type': 'while_statement', 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
 
 def p_for_statement(p):
@@ -230,7 +229,11 @@ def p_binary_op_le(p):
 
 def p_binary_op_equals(p):
     'binary_op : expression ISEQUALS expression'
-    p[0] = {'type': 'isequals', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
+    p[0] = {'type': '==', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
+
+def p_binary_op_notequals(p):
+    'binary_op : expression NOTEQUALS expression'
+    p[0] = {'type': '!=', 'children': [p[1], p[3]], 'lineno': p.lineno(2)}
     
 ## Numeric expressions
 

@@ -16,6 +16,7 @@ def analyze(node):
     if node['type'] == 'func_call':	     	return analyze_func_call(node)
     if node['type'] == 'func_declaration':	return analyze_function_declaration(node)
     if node['type'] == 'if_statement':		return analyze_if_statement(node)
+    if node['type'] == 'if_else_statement': return analyze_if_else_statement(node)
     if node['type'] == 'return':            return analyze_return_statement(node)
 
 def analyze_translation_unit(node):
@@ -34,9 +35,9 @@ def analyze_assignment(node):
             print "Error at line {0}: variable {1} already defined".format(node['lineno'], id)
             sys.exit(1)
         #check type of expression
-        type = type_check(expression)
-        print "got type {0}".format(type)
-        if type == node['var_type']:
+        expr_type = type_check(expression)
+        print "got type {0}".format(expr_type)
+        if expr_type == node['var_type']:
             #Add symbol to symbol table
             symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False))
         else:
@@ -57,8 +58,8 @@ def analyze_assignment(node):
             print "Error at line {0}: variable {1} does not exist".format(node['lineno'], id)
             sys.exit(1)
         #get type of expression being assigned
-        type = type_check(expression)
-        if not type == symbol.type:
+        expr_type = type_check(expression)
+        if not expr_type == symbol.type:
             print "Error at line {0}: cannot assigned expression of type {1} to variable of type {2}".format(node['lineno'], type, symbol.type)
             sys.exit(1)
 
@@ -152,22 +153,35 @@ def analyze_return_statement(node):
     sys.exit(1)
 
 def analyze_if_statement(node):
+    condition = node['children'][0]
     #check that the condition is a boolean expression
-    condition = type_check(node['children'][0])
-    if condition != 'boolean':
+    condition_type = type_check(condition)
+    if condition_type != 'boolean':
         print "Error at line {0}: condition must be a boolean expression".format(node['lineno'])
         sys.exit(1)
     #now analyze the if block
     analyze_translation_unit(node['children'][1])
-    
+
+def analyze_if_else_statement(node):
+    condition = node['children'][0]['children'][0]
+    condition_type= type_check(condition)
+    if condition_type != 'boolean':
+        print "Error at line {0}: condition must be a boolean expression".format(node['lineno'])
+        sys.exit(1)
+    #analyze the if block
+    analyze_translation_unit(node['children'][0]['children'][1])
+    #and now the else block
+    analyze_translation_unit(node['children'][1]['children'][0])
+
 #an expression can be either a binary op, unary op, 
 #func call, identifier or literal value
 #type checking is done using a post-order tree traversal
 def type_check(node):
     """This function returns an expression's type
     and also analyzes the expression"""
+    global type
     if not isinstance(node, dict): #if node is not a dictionary then it's an explicit value
-        global type
+
         return convert_types(type(node).__name__)
     if node['type'] == 'ID' or node['type'] == 'func_call':
         id = node['children'][0] if node['type'] == 'ID' else node['children'][0]['children'][0]
@@ -185,15 +199,15 @@ def type_check(node):
             parameters.append(param['children'][0])
         return parameters
     if node['type'] == 'uminus':
-        type = type_check(node['children'][0])
-        if type == 'integer' or type == 'real':
-            return type
+        found_type = type_check(node['children'][0])
+        if found_type == 'integer' or type == 'real':
+            return found_type
         print "Error at line {0}: invalid operand type, expected integer or float, got {1}".format(node['lineno'], type)
         sys.exit(1)
     if node['type'] == 'not':
-        type = type_check(node['children'][0])
-        if type == 'boolean':
-            return type
+        found_type = type_check(node['children'][0])
+        if found_type == 'boolean':
+            return found_type
         print "Error at line {0}: invalid operand type, expected boolean, got {1}".format(node['lineno'], type)
         sys.exit(1)
     #and and or operations are only defined for boolean types

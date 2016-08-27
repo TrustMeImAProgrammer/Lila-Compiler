@@ -9,7 +9,8 @@ precedence = (
          ('left', 'GT', 'GE', 'LT', 'LE'),
          ('left', 'PLUS', 'MINUS'),
          ('left', 'TIMES', 'DIVIDE', 'MODULO'),
-    	 ('right', 'UMINUS')
+    	 ('right', 'UMINUS'),
+         ('right', 'NOT')
      )
 
 def p_program(p):
@@ -41,6 +42,7 @@ def p_statement(p):
 
 def p_statement_block(p):
     """statement :     	if_statement
+         |  if_else_statement
 		 |	while_statement
 		 |	for_statement
     """
@@ -112,18 +114,20 @@ def p_return_statement(p):
 # Language constructs
 #----------------------
 
-#need to check if the binary op returns a boolean
-def p_if_statement(p):
-    'if_statement : IF binary_op LBRACKET translation_unit RBRACKET'
-    p[0] = {'type': 'if_statement', 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
 
-# def p_if_else_statement(p):
-#     'if_statement : IF binary_op LBRACKET translation_unit RBRACKET ELSE LBRACKET translation_unit RBRACKET'
-#     p[0] = {'type': 'if_statement', 'else_block': p[8], 'children': [p[2], p[4]]}
+def p_if_else_statement(p):
+    'if_else_statement : if_statement else_statement'
+    p[0] = {'type': 'if_else_statement', 'children': [p[1], p[2]]}
+
+def p_if_statement(p):
+    """if_statement : IF binary_op LBRACKET translation_unit RBRACKET
+                    | IF expression LBRACKET translation_unit RBRACKET"""
+    p[0] = {'type': 'if_statement', 'children': [p[2], p[4]], 'lineno': p.lineno(1)}
 
 def p_else_statement(p):
     'else_statement : ELSE LBRACKET translation_unit RBRACKET'
     p[0] = {'type': 'else_statement', 'children': [p[3]], 'lineno': p.lineno(1)}
+
 def p_while_statement(p):
     'while_statement : WHILE binary_op LBRACKET translation_unit RBRACKET'
     p[0] = {'type': 'while_statement', 'children': [p[2], p[4]], 'lineno': p.lineno(1)}

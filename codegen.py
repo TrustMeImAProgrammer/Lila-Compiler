@@ -7,11 +7,6 @@ table = symbol_table.SymbolTable()
 rodata = "SECTION .rodata" + '\n'
 
 data = "SECTION .data" + '\n'
-data = data + 'True: db "True",10' + '\n'
-data = data + 'TrueLen: equ $-True' + '\n'
-data = data + 'False: db "False",10' + '\n'
-data = data + 'FalseLen: equ $-False' + '\n'
-
 bss = "SECTION .bss" + '\n'
 
 text = dict()
@@ -22,6 +17,7 @@ text['code'] += "_start:" + '\n'
 
 rodata_index = 0
 data_index = 0
+label_index = 0
 
 builtin_functions = ['print']
 
@@ -45,6 +41,8 @@ def generate_text(node, place):
     elif node['type'] == 'func_call':       	generate_func_call(node, place)
     elif node['type'] == 'func_declaration':	generate_function_declaration(node)
     elif node['type'] == 'return':              generate_return_statement(node)
+    elif node['type'] == 'if_statement' or node['type'] == 'if_else_statement':
+        generate_if_statement(node, place)
 
 
 def generate_translation_unit(node, place):
@@ -123,6 +121,28 @@ def generate_return_statement(node):
     generate_expression(node['children'][0], 'functions')
     delete_ar()
 
+def generate_if_statement(node, place):
+    global label_index
+    else_block = None
+    if node['type'] == 'if_else_statement':
+        expression = node['children'][0]['children'][0]
+        if_block = node['children'][0]['children'][1]
+        else_block = node['children'][1]['children'][0]
+    else:
+        expression = node['children'][0]
+        if_block = node['children'][1]
+    generate_expression(expression, place)
+    text[place] += '\t' + "cmp eax,  0" + '\n'
+    text[place] += '\t' + "je .L" + str(label_index) + '\n'
+    generate_text(if_block, place)
+    if else_block:
+        text[place] += '\t' + "jmp .L" + str(label_index + 1) + '\n'
+    text[place] += ".L" + str(label_index) + ':' + '\n'
+    if else_block:
+        generate_text(else_block, place)
+        text[place] += ".L" + str(label_index + 1) + ':' + '\n'
+    label_index += 1
+
 def generate_call_to_print(node, place):
     arg_list = node['children'][1]['children'] #array of expressions
     for argument in arg_list:
@@ -143,23 +163,26 @@ def generate_call_to_print(node, place):
 def generate_expression(node, place):
     global rodata, rodata_index
     if not isinstance(node, dict): #if node is not a dictionary then it's an explicit value
-        if isinstance(node, int):
+        if isinstance(node, bool): #text for bool first since its a subclass of int
+            if node: #True
+                text[place] += '\t' + "mov eax,  1" + '\n'
+            else: #False
+                text[place] += '\t' + "mov eax,  0" + '\n'
+        elif isinstance(node, int):
                 text[place] += '\t' + "mov eax,  " + str(node) + '\n'
         elif isinstance(node, str):
             rodata += "Label" + str(rodata_index) + ": db " + '"' + str(node)+ '",10' + '\n'
             #this might not be necessary since we can get the info using len(str)
             text[place] += '\t' + "mov eax,  " + "Label" + str(rodata_index) + '\n'
-            text[place] += '\t' + "mov ebx,  " + str(len(node)) + '\n'
+            text[place] += '\t' + "mov ebx,  " + str(len(node) + 1) + '\n'
             rodata_index += 1
-        #TODO generate code for other types
     elif node['type'] == 'ID':
         id = table.find_symbol(node['children'][0])
-        if id.type == 'integer' or id.type == 'string':
-            if id.kind == 'parameter':
-                #parameters always have a positive offset
-                text[place] += '\t' + "mov eax,  DWORD [ebp+" + str(id.offset) +']' + '\n'
-            else:
-                text[place] += '\t' + "mov eax,  DWORD [ebp-" + str(id.offset) +']' + '\n'
+        if id.kind == 'parameter':
+            #parameters always have a positive offset
+            text[place] += '\t' + "mov eax,  DWORD [ebp+" + str(id.offset) +']' + '\n'
+        else:
+            text[place] += '\t' + "mov eax,  DWORD [ebp-" + str(id.offset) +']' + '\n'
 
     elif node['type'] == "func_call":
         generate_func_call(node, place)
@@ -192,23 +215,24 @@ def generate_expression(node, place):
             text[place] += '\t' + "mul ebx" + '\n'
         else:
             text[place] += '\t' + "div ebx" + '\n'
-    #TODO implement booleans
     elif node['type'] == "not":
-        pass
+        generate_expression(node['children'][0], place)
+        text[place] += '\t' + "xor ax,  1" + '\n'
     elif node['type'] == "and":
-        pass
+        generate_expression(node['children'][0], place)
+        text[place] += '\t' + "push eax" + '\n'
+        generate_expression(node['children'][1], place)
+        text[place] += '\t' + "pop ebx" + '\n'
+        text[place] += '\t' + "and eax,  ebx" + '\n'
     elif node['type'] == "or":
-        pass
+        generate_expression(node['children'][0], place)
+        text[place] += '\t' + "push eax" + '\n'
+        generate_expression(node['children'][1], place)
+        text[place] += '\t' + "pop ebx" + '\n'
+        text[place] += '\t' + "or eax,  ebx" + '\n'
 
 
 def delete_ar():
     text['functions'] += '\t' + "mov esp,  ebp" + '\n'
     text['functions'] += '\t' + "pop ebp" + '\n'
     text['functions'] += '\t' + "ret" + '\n'
-
-def get_str_length(node):
-    if isinstance(node, str):
-        return len(node)
-    if node['type'] == 'id':
-        string = table.find_symbol(node['children'][0])
-        return len(node['children'][0])

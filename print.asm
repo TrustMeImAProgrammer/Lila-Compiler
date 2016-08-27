@@ -3,6 +3,14 @@
 ;These functions call sys_write in the linux kernel and writes to stdout
 ;The parameters must be pushed onto the stack prior to the call, in the case
 ;of print_text, the length of the string must be pushed too
+
+SECTION .data
+True: db "True",10
+TrueLen: equ $-True
+False: db "False",10
+FalseLen: equ $-False
+
+SECTION .text
 GLOBAL print_number, print_text
 ;TODO print numbers > 9
 print_number:

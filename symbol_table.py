@@ -1,12 +1,11 @@
 class Symbol:
-    def __init__(self, name, type, kind = 'var', constant = False, params = None, offset = 0, strlen = None):
+    def __init__(self, name, type, kind = 'var', constant = False, params = None, offset = 0):
         self.name = name
         self.type = type
         self.kind = kind # kind = function, var, or parameter
         self.is_constant = constant
         self.params = params #parameters needed in case its a function
         self.offset = offset #offset from ebp in case its a local variable, used only in code generation
-        self.length = strlen #length of strings
 #--------------------------------
 #This is a stack of scopes, 
 #the stack is implemented as a list

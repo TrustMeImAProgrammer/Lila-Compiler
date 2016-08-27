@@ -52,30 +52,21 @@ def generate_translation_unit(node, place):
         generate_text(child, place)
 
 def generate_assignment(node, place):
-    if node['var_type']:
-        generate_declaration(node, place)
-    else:
-       generate_reassignment(node, place)
-
-def generate_declaration(node, place):
-    #TODO handle constants
     generate_expression(node['children'][1], place)
-    #    if node['var_type'] == 'integer': THIS MIGHT ACTUALLY WORK FOR ALL EXPRESSION TYPES
     text[place] += '\t' + "sub esp,  4" + '\n'
     variables = 0
-    for symbol in table.scopes[len(table.scopes) - 1]: #the innermost scope
-        if symbol.kind == 'var': #parameters and functions never change offset
-            variables += 1
-    #the offset from ebp of any variable is given by the number of variables in the scope
-    #plus four (since 0 is the saved frame pointer)
-    table.add_symbol(symbol_table.Symbol(node['children'][0]['children'][0], node['var_type'],
-                                         offset = 4 * variables + 4))
-    text[place] += '\t' + "mov [ebp-" + str(variables * 4 + 4) + "], eax" + '\n'
-
-
-#TODO
-def generate_reassignment(node, place):
-    pass
+    if node['var_type']:
+        #declaration + assignment
+        for symbol in table.scopes[len(table.scopes) - 1]: #the innermost scope
+            if symbol.kind == 'var': #parameters and functions never change offset
+                variables += 1
+        table.add_symbol(symbol_table.Symbol(node['children'][0]['children'][0], node['var_type'],
+                                                 offset = 4 * variables + 4))
+        text[place] += '\t' + "mov [ebp-" + str(variables * 4 + 4) + "], eax" + '\n'
+    else:
+        #just reassignment of existing variable
+        id = table.find_symbol(node['children'][0]['children'][0])
+        text[place] += '\t' + "mov [ebp-" + str(id.offset) + "], eax" + '\n'
 
 #functions can only be declared in the functions section
 def generate_function_declaration(node):
@@ -142,8 +133,7 @@ def generate_call_to_print(node, place):
         if param_type == 'integer':
             text[place] += '\t' + "call print_number" + '\n'
             text[place] += '\t' + "add esp,  4" + '\n'
-        elif param_type == 'string':
-            text[place] += '\t' + "mov ebx,  " + str(len(node) + 1) + '\n' #+1 for EOL
+        elif param_type == 'string': #if it's a string, evaluating the expression will put its length in ebx
             text[place] += '\t' + "push ebx" + '\n'
             text[place] += '\t' + "call print_text" + '\n'
             text[place] += '\t' + "add esp,  8" + '\n'
@@ -156,10 +146,10 @@ def generate_expression(node, place):
         if isinstance(node, int):
                 text[place] += '\t' + "mov eax,  " + str(node) + '\n'
         elif isinstance(node, str):
-            rodata += "Label" + str(rodata_index) + ": db " + '"' + str(node)+ '",0' + '\n'
+            rodata += "Label" + str(rodata_index) + ": db " + '"' + str(node)+ '",10' + '\n'
             #this might not be necessary since we can get the info using len(str)
-            rodata += "Label" + str(rodata_index) + "Len: equ $-Label" + str(rodata_index) + '\n'
             text[place] += '\t' + "mov eax,  " + "Label" + str(rodata_index) + '\n'
+            text[place] += '\t' + "mov ebx,  " + str(len(node)) + '\n'
             rodata_index += 1
         #TODO generate code for other types
     elif node['type'] == 'ID':
@@ -215,3 +205,10 @@ def delete_ar():
     text['functions'] += '\t' + "mov esp,  ebp" + '\n'
     text['functions'] += '\t' + "pop ebp" + '\n'
     text['functions'] += '\t' + "ret" + '\n'
+
+def get_str_length(node):
+    if isinstance(node, str):
+        return len(node)
+    if node['type'] == 'id':
+        string = table.find_symbol(node['children'][0])
+        return len(node['children'][0])

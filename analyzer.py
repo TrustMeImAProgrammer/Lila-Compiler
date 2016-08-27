@@ -38,11 +38,7 @@ def analyze_assignment(node):
         print "got type {0}".format(type)
         if type == node['var_type']:
             #Add symbol to symbol table
-            if type == 'string':
-                #add length information into the table
-                symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False, strlen = len(expression)))
-            else:
-                symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False))
+            symboltable.add_symbol(symbol_table.Symbol(id, node['var_type'], 'var', True if node['constant'] else False))
         else:
             print "Error at line {0}: variable type and expression type don't coincide".format(node['lineno'])
             sys.exit(1)

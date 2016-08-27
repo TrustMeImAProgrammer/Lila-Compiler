@@ -65,7 +65,7 @@ t_CHARLITERAL = r"'.'"
 #two single quotes can be used when it's necessary to represent one inside the string
 def t_SLITERAL(t):
     r"'([^']|'')*'" 
-    t.value = str(t.value)
+    t.value = str(t.value).replace("'", "")
     return t
 
 def t_FALSE(t):

@@ -18,7 +18,7 @@ def analyze(node):
     if node['type'] == 'if_statement':		return analyze_if_statement(node)
     if node['type'] == 'if_else_statement': return analyze_if_else_statement(node)
     if node['type'] == 'while_statement':   return analyze_while_statement(node)
-    if node['type'] == 'return':            return analyze_return_statement(node)
+    #if node['type'] == 'return':            return analyze_return_statement(node)
 
 def analyze_translation_unit(node):
     for child in node['children']:
@@ -148,10 +148,10 @@ def analyze_function_declaration(node):
     #remove the parameters from the scope again
     symboltable.exit_scope()
 
-def analyze_return_statement(node):
-    #this return statement is not within a function
-    print "Error at line {0}: return statement outside a function".format(node['lineno'])
-    sys.exit(1)
+# def analyze_return_statement(node):
+#     #this return statement is not within a function
+#     print "Error at line {0}: return statement outside a function".format(node['lineno'])
+#     sys.exit(1)
 
 def analyze_if_statement(node):
     condition = node['children'][0]

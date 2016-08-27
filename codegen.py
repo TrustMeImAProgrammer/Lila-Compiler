@@ -234,6 +234,7 @@ def generate_expression(node, place):
             #again no overflow checking is done for now, the value in edx is ignored
             text[place] += '\t' + "mul ebx" + '\n'
         else:
+            text[place] += '\t' + "mov edx,  0" + '\n' #clear edx before dividing
             text[place] += '\t' + "div ebx" + '\n'
     elif node['type'] == "not":
         generate_expression(node['children'][0], place)

@@ -199,6 +199,7 @@ def p_value(p):
     		|	FLOATNUMBER
 		|	TRUE
 		|	FALSE
+        |   unary_minus
     """
     p[0] = p[1]
     
@@ -259,9 +260,9 @@ def p_binary_op_divide(p):
 
 ######
 
-def p_unary_op_minus(p):
-    'unary_op : MINUS expression %prec UMINUS'
-    p[0] = {'type': 'uminus', 'children': [p[2]], 'lineno': p.lineno(1)}
+def p_unary_minus(p):
+    'unary_minus : MINUS expression %prec UMINUS'
+    p[0] = -p[2]
 
 # def p_unary_op_plus(p):
 #     'unary_op : PLUS expression'

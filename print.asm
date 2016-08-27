@@ -13,11 +13,25 @@ FalseLen: equ $-False
 SECTION .text
 GLOBAL print_number, print_text
 
+
+negative:
+	neg 	eax				; convert to positive
+	push 	eax				; save the register
+	mov 	eax,  0x2D		; 2d is '-' in ASCII
+	push 	eax				; push to get its address
+	mov		eax,  esp		; get the address in eax
+	call 	print_digit		; print '-'
+	add		esp,  4			; pop the '-' from the stack
+	pop		eax				; restore the value of eax
+	jmp divide_loop			; now go on to print the value
+	
 print_number:
-	push 	ebp
-	mov 	ebp, esp
+	push	ebp				; save the previous frame pointer
+	mov 	ebp, esp        ; set up the activation record
 	mov		eax,  [ebp+8]	; get the parameter to print into eax
     mov     ecx,  0         ; counter of how many bytes we need to print
+	test 	eax, eax		; test if value is negative
+	js		negative		; jump if signed
  
 divide_loop:
     inc     ecx             ; increase counter

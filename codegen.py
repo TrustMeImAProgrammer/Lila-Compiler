@@ -11,7 +11,7 @@ bss = "SECTION .bss" + '\n'
 
 text = dict()
 text['functions'] = '\n' + "SECTION .text" + '\n'
-text['functions'] += "EXTERN print_number, print_text" + '\n'
+text['functions'] += "EXTERN print_number, print_text, print_boolean" + '\n'
 text['code'] = "global _start" + '\n'
 text['code'] += "_start:" + '\n'
 
@@ -176,6 +176,9 @@ def generate_call_to_print(node, place):
             text[place] += '\t' + "push ebx" + '\n'
             text[place] += '\t' + "call print_text" + '\n'
             text[place] += '\t' + "add esp,  8" + '\n'
+        elif param_type == 'boolean':
+            text[place] += '\t' + "call print_boolean" + '\n'
+            text[place] += '\t' + "add esp,  4" +'\n'
 
 # TODO generate all other expressions
 #Expression is evaluated and its value is put in the accumulator (eax)

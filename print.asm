@@ -11,7 +11,7 @@ False: db "False",10
 FalseLen: equ $-False
 
 SECTION .text
-GLOBAL print_number, print_text
+GLOBAL print_number, print_text, print_boolean
 
 
 negative:
@@ -78,3 +78,27 @@ print_text:
 	int 	0x80
 	pop 	ebp
 	ret
+
+print_boolean:
+    push    ebp
+    mov     ebp,  esp
+    mov     eax,  [esp+8]		; get the parameter
+	cmp		eax,  0				; check the parameter's value
+	je		print_false
+	mov 	ecx,  True			; load the address to print
+	mov 	eax,  4				; 4 for sys_write
+	mov 	ebx,  1				; 1 for stdout
+	mov		edx,  TrueLen		; the length in bytes to be printed
+	int		0x80
+	pop		ebp
+	ret
+
+print_false:
+	mov 	ecx,  False			; Load the address of the "False" string
+	mov 	eax,  4				; 4 for sys_write
+	mov 	ebx,  1				; 1 for stdout
+	mov 	edx,  FalseLen		; load the length of the "False" string"
+	int 	0x80
+	pop 	ebp
+	ret
+    

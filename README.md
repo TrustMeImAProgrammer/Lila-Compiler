@@ -1,6 +1,6 @@
 #Lila compiler
 
-Lila is a strongly type, imperative programming language designed by me as part of a university project.
+Lila is a strongly typed, imperative programming language designed by me as part of a university project.
 
 This compiler translates a lila source code file into x86 NASM Assembler. It then calls nasm to assemble the file and finally calls the GNU linker (ld) to link and generate a linux executable file.
 As a result, in order to test the compiler both nasm and ld must be installed and added to the system $PATH. Also, the compiler is written in python 2 and will not work under python 3 (although it should be very easy to get it working).

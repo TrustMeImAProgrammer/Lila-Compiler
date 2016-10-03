@@ -36,6 +36,11 @@ After this an executable file called sourcecode will be generated if everything 
 I've tried to make Lila's syntax very readable while taking a few ideas from C's and python's syntax.
 I'll upload a list of example lila files to run tests on and get an idea of lila's syntax.
 
+##TODO
+
+- While the parser accepts keywords to declare floating point variables, this functionality is still not implemented.
+- I'm aware the way the compiler works is far from being optimal, I might add some optimizations in the future.
+
 ## License
 
     Copyright (C) 2016 Carlos Manrique
